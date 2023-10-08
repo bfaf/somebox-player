@@ -121,9 +121,6 @@ function List(): JSX.Element {
       </View>
       
       <ScrollView>
-      <View>
-              <Text style={{ position: 'absolute', top: 400, left: 400, color: 'white', fontSize: 20, backgroundColor: 'red'}}>Event: {eventName}</Text>
-            </View>
         {renderMovies()}
       </ScrollView>
       
