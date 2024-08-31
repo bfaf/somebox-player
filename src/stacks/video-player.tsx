@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import Video from 'react-native-video';
 import {
   SafeAreaView,
@@ -25,6 +25,8 @@ const VideoPlayer = ({ route }) => {
   const { videoId } = route?.params;
   const [isPaused, setIsPaused] = useState<boolean>(false);
   const [currentTimeInSeconds, setCurrentTimeInSeconds] = useState<number>(0);
+  const [downPressedTimes, setDownPressedTimes] = useState<number>(0);
+  const [audioTrack, setAudioTrack] = useState<number>(0);
   
   let player: any = useRef();
   const myTVEventHandler = (evt: HWEvent) => {
@@ -39,13 +41,24 @@ const VideoPlayer = ({ route }) => {
     } else if (type === 'rewind') {
       ToastAndroid.showWithGravity('-10', ToastAndroid.SHORT, ToastAndroid.CENTER);
       player.current.seek(currentTimeInSeconds - 10);
+    } else if (type === 'down') {
+      console.log('Down pressed');
+      setDownPressedTimes(downPressedTimes + 1);
+      if (downPressedTimes > 0) {
+        console.log('Switching audio track');
+        setAudioTrack(audioTrack + 1);
+        setDownPressedTimes(0);
+      }
+      if (audioTrack >= 3) {
+        console.log('RESETING audio track');
+        setAudioTrack(0);
+      }
     }
   };
 
   if (Platform.isTV) {
     useTVEventHandler(myTVEventHandler);
   }
-
 
   const onVideoError = (error: any) => {
     console.log(`Error: ${JSON.stringify(error, null, 2)}`);
@@ -55,7 +68,7 @@ const VideoPlayer = ({ route }) => {
     setCurrentTimeInSeconds(data.currentTime);
   };
 
-  
+  const onLoad = (data) => console.log(JSON.stringify(data, null, 2));
 
   return (
     <SafeAreaView>
@@ -68,6 +81,11 @@ const VideoPlayer = ({ route }) => {
           ref={player}
           onProgress={onProgress}
           repeat={true}
+          selectedAudioTrack={{
+            type: 'index',
+            value: audioTrack
+          }}
+          onLoad={onLoad}
           style={styles.backgroundVideo} />
           {/* <Text style={{ position: 'absolute', top: 300, left: 300, zIndex: 10000, fontSize: 20, color: 'white', backgroundColor: 'red'}}>Buffering: {buffering}</Text>*/}
       </View>
