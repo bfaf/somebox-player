@@ -5,7 +5,7 @@
  * @format
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import { ActivityIndicator, AppBar, HStack, VStack, IconButton } from "@react-native-material/core";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
@@ -33,37 +33,28 @@ import { SomeBoxFileInfo } from '../constants';
 function List(): JSX.Element {
   const navigation = useNavigation();
   const [eventName, setEventName] = useState<string>('');
-  const [movies, setMovies] = useState();
+  const [movies, setMovies] = useState([]);
   const [errorMessage, setErrorMessage] = useState<any>('');
-  const [micStatus, setMicStatus] = useState();
 
   useEffect(() => {
     const fetchMovies = async () => {
       try {
         const m = await axios.get('http://192.168.1.9:8080/api/v1/list');
+        console.log('response', m.data);
         setMovies(m.data);
-        // const m = await axios.get('http://192.168.1.9:8080/api/v1/list');
-        // setMicStatus(m.data);
       } catch (err) {
         setErrorMessage(err);
-        // console.error(err);
       }
     };
     fetchMovies();
   }, []);
 
   const myTVEventHandler = (evt: HWEvent) => {
-    // console.log(`EventType: ${evt.eventType}`);
     setEventName(evt.eventType);
-    // setLastEventType(evt.eventType);
   };
 
   if (Platform.isTV) {
     useTVEventHandler(myTVEventHandler);
-  }
-
-  if (micStatus) {
-    return (<View><Text style={{color: 'black'}}>Mic status is {JSON.stringify(micStatus, null, 2)}</Text></View>);
   }
 
   if (errorMessage) {
@@ -73,7 +64,7 @@ function List(): JSX.Element {
   if (!movies || movies.length == 0) {
     return (<ActivityIndicator size="large" />);
   }
-  // VStack
+
   const renderMovies = () => {
     const rows = [];
 
@@ -84,11 +75,11 @@ function List(): JSX.Element {
     
     return (
       <VStack style={{ marginTop: 0, marginLeft: 'auto', marginRight: 'auto', width: '83%'}}>
-        {rows.map((row, idx) => <HStack m={30} spacing={8} key={idx}>
+        {rows.map((row, idx: number) => <HStack m={30} spacing={8} key={idx}>
           {row.map((r: SomeBoxFileInfo) =>
-            <View key={r.id}>
-              <TouchableOpacity key={r.id} onPress={() => navigation.navigate('Player', { videoId: r.id })} >
-                <Image source={{ uri: `http://192.168.1.9:8080/api/v1/image/${r.id}` }} style={{ width: 180, height: 101 }} />
+            <View key={r.filename}>
+              <TouchableOpacity key={r.filename} onPress={() => navigation.navigate('Player', { videoId: r.filename })} >
+                <Image source={{ uri: `http://192.168.1.9:8080/api/v1/image/${r.filename}` }} style={{ width: 180, height: 101 }} />
                 <Text numberOfLines={1} style={{fontSize: 14, width: 180, color: 'grey'}}>{r.filename}</Text>
               </TouchableOpacity>
             </View>

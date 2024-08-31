@@ -23,25 +23,21 @@ const bufferConfig = {
 
 const VideoPlayer = ({ route }) => {
   const { videoId } = route?.params;
-  // const [eventName, setEventName] = useState<string>('');
-  const [buffering, SetBuffering] = useState<any>(false);
   const [isPaused, setIsPaused] = useState<boolean>(false);
   const [currentTimeInSeconds, setCurrentTimeInSeconds] = useState<number>(0);
-  const [readyToDisplay, setReadyToDisplay] = useState<boolean>(false);
-
+  
   let player: any = useRef();
   const myTVEventHandler = (evt: HWEvent) => {
-    // setEventName(evt.eventType);
     const type = evt.eventType;
     if (type === 'pause') {
       setIsPaused(true);
     } else if (type === 'play') {
       setIsPaused(false);
     } else if (type === 'fastForward') {
-      ToastAndroid.show('+10', ToastAndroid.SHORT);
+      ToastAndroid.showWithGravity('+10', ToastAndroid.SHORT, ToastAndroid.CENTER);
       player.current.seek(currentTimeInSeconds + 10);
     } else if (type === 'rewind') {
-      ToastAndroid.show('-10', ToastAndroid.SHORT);
+      ToastAndroid.showWithGravity('-10', ToastAndroid.SHORT, ToastAndroid.CENTER);
       player.current.seek(currentTimeInSeconds - 10);
     }
   };
@@ -50,10 +46,6 @@ const VideoPlayer = ({ route }) => {
     useTVEventHandler(myTVEventHandler);
   }
 
-  const onBuffer = (isBuffering: any) => {
-    console.log(`Buffering: ${isBuffering}`);
-    SetBuffering(isBuffering);
-  }
 
   const onVideoError = (error: any) => {
     console.log(`Error: ${JSON.stringify(error, null, 2)}`);
@@ -63,19 +55,6 @@ const VideoPlayer = ({ route }) => {
     setCurrentTimeInSeconds(data.currentTime);
   };
 
-  const onLoad = () => {
-    setReadyToDisplay(true);
-  }
-
-  const onReadyForDisplay = () => {
-    setReadyToDisplay(true);
-  }
-
-  /*
-  if (!readyToDisplay) {
-    return (<ActivityIndicator size="large" />);
-  }
-  */
   
 
   return (
@@ -85,10 +64,10 @@ const VideoPlayer = ({ route }) => {
           fullscreen={true}
           resizeMode="cover"
           paused={isPaused}
-          onBuffer={onBuffer}
           onError={onVideoError}
           ref={player}
           onProgress={onProgress}
+          repeat={true}
           style={styles.backgroundVideo} />
           {/* <Text style={{ position: 'absolute', top: 300, left: 300, zIndex: 10000, fontSize: 20, color: 'white', backgroundColor: 'red'}}>Buffering: {buffering}</Text>*/}
       </View>
