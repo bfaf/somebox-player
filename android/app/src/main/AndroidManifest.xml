@@ -10,6 +10,7 @@
       android:allowBackup="false"
       android:theme="@style/AppTheme"
       android:banner="@mipmap/tv_banner"
+      android:usesCleartextTraffic="true"
       >
       <activity
         android:name=".MainActivity"

@@ -16,6 +16,7 @@ import {
 } from '@react-native-material/core';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {
+  faArrowsRotate,
   faEllipsisVertical,
   faMagnifyingGlass,
 } from '@fortawesome/free-solid-svg-icons';
@@ -33,26 +34,31 @@ import {
   useTVEventHandler,
   HWEvent,
   Platform,
+  Pressable,
 } from 'react-native';
 
 import {SomeBoxFileInfo} from '../constants';
+import Debug from '../components/debug';
 
 function List(): JSX.Element {
   const navigation = useNavigation();
   const [eventName, setEventName] = useState<string>('');
   const [movies, setMovies] = useState([]);
-  const [errorMessage, setErrorMessage] = useState<any>('');
+  const [errorMessage, setErrorMessage] = useState<any>(null);
+
+  const fetchMovies = async () => {
+    setMovies([]);
+    setErrorMessage(null);
+    try {
+      const m = await axios.get('http://192.168.1.9:8080/api/v1/list');
+      // console.log('response', JSON.stringify(m.data, null, 2));
+      setMovies(m.data);
+    } catch (err) {
+      setErrorMessage(err);
+    }
+  };
 
   useEffect(() => {
-    const fetchMovies = async () => {
-      try {
-        const m = await axios.get('http://192.168.1.9:8080/api/v1/list');
-        // console.log('response', JSON.stringify(m.data, null, 2));
-        setMovies(m.data);
-      } catch (err) {
-        setErrorMessage(err);
-      }
-    };
     fetchMovies();
   }, []);
 
@@ -64,73 +70,66 @@ function List(): JSX.Element {
     useTVEventHandler(myTVEventHandler);
   }
 
-  if (errorMessage) {
-    return (
-      <View>
-        <Text style={{color: 'black'}}>{JSON.stringify(errorMessage)}</Text>
-      </View>
-    );
-  }
-
-  const renderMovies = useCallback((movies) => {
-    if (!movies || movies.length == 0) {
-      return <ActivityIndicator size="large" />;
-    }
-
-    movies.sort((a: SomeBoxFileInfo, b: SomeBoxFileInfo) => {
-      if (a.filename > b.filename) {
-        return 1;
-      } else if (a.filename < b.filename) {
-        return -1;
+  const renderMovies = useCallback(
+    movies => {
+      if (!movies || movies.length === 0) {
+        return <ActivityIndicator size="large" />;
       }
 
-      return 0;
-    });
+      movies.sort((a: SomeBoxFileInfo, b: SomeBoxFileInfo) => {
+        if (a.filename > b.filename) {
+          return 1;
+        } else if (a.filename < b.filename) {
+          return -1;
+        }
 
-    const rows = [];
+        return 0;
+      });
 
-    for (let i = 0; i < movies.length; i += 4) {
-      rows.push(movies.slice(i, i + 4));
-    }
+      const rows = [];
 
-    return (
-      <VStack
-        style={{
-          marginTop: 0,
-          marginLeft: 'auto',
-          marginRight: 'auto',
-          width: '83%',
-        }}>
-        {rows.map((row, idx: number) => (
-          <HStack m={30} spacing={8} key={idx}>
-            {row.map((r: SomeBoxFileInfo) => (
-              <View
-                key={r.filename}
-                style={{display: 'flex', flexDirection: 'row'}}>
-                <TouchableOpacity
+      for (let i = 0; i < movies.length; i += 4) {
+        rows.push(movies.slice(i, i + 4));
+      }
+
+      return (
+        <VStack
+          style={{
+            marginTop: 0,
+            marginLeft: 'auto',
+            marginRight: 'auto',
+            width: '83%',
+          }}>
+          {rows.map((row, idx: number) => (
+            <HStack m={30} spacing={8} key={idx}>
+              {row.map((r: SomeBoxFileInfo, innerIdx: number) => (
+                <View
                   key={r.filename}
-                  onPress={() =>
-                    navigation.navigate('Player', {videoId: r.filename})
-                  }>
-                  
-                  <Image
-                    source={{
-                      uri: `http://192.168.1.9:8080/api/v1/image/${r.filename}`,
-                    }}
-                    style={{width: 180, height: 101}}
-                  />
-                  <Text
-                    numberOfLines={1}
-                    style={{fontSize: 14, width: 180, color: 'grey'}}>
-                    {r.filename}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            ))}
-          </HStack>
-        ))}
-      </VStack>
-    );
+                  style={{display: 'flex', flexDirection: 'row'}}>
+                  <TouchableOpacity
+                    key={r.filename}
+                    hasTVPreferredFocus={idx === 0 && innerIdx === 0}
+                    onPress={() =>
+                      navigation.navigate('Player', {videoId: r.filename})
+                    }>
+                    <Image
+                      source={{
+                        uri: `http://192.168.1.9:8080/api/v1/image/${r.filename}`,
+                      }}
+                      style={{width: 180, height: 101}}
+                    />
+                    <Text
+                      numberOfLines={1}
+                      style={{fontSize: 14, width: 180, color: 'grey'}}>
+                      {r.filename}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              ))}
+            </HStack>
+          ))}
+        </VStack>
+      );
     },
     [navigation],
   );
@@ -153,6 +152,16 @@ function List(): JSX.Element {
                 {...props}
               />
               <IconButton
+              onPress={fetchMovies}
+                icon={props => (
+                  <FontAwesomeIcon
+                    icon={faArrowsRotate}
+                    style={{color: 'white'}}
+                  />
+                )}
+                {...props}
+              />
+              <IconButton
                 icon={props => (
                   <FontAwesomeIcon
                     icon={faEllipsisVertical}
@@ -166,7 +175,12 @@ function List(): JSX.Element {
         />
       </View>
 
-      <ScrollView style={{marginBottom: 50}}>{renderMovies(movies)}</ScrollView>
+      <ScrollView style={{marginBottom: 50}}>
+        <>
+          {renderMovies(movies)}
+          <Debug name="errorMessage" data={errorMessage} />
+        </>
+      </ScrollView>
     </SafeAreaView>
   );
 }

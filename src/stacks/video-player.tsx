@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+import React, { useState, useRef } from 'react';
 import Video from 'react-native-video';
 import {
   SafeAreaView,
@@ -8,18 +8,11 @@ import {
   useTVEventHandler,
   HWEvent,
   Platform,
-  ActivityIndicator,
   Text,
   TouchableOpacity,
   ToastAndroid
 } from 'react-native';
-
-const bufferConfig = {
-  minBufferMs: 10000,
-  maxBufferMs: 30000,
-  bufferForPlaybackMs: 2500,
-  bufferForPlaybackAfterRebufferMs: 5000
-};
+import Debug from '../components/debug';
 
 const VideoPlayer = ({ route }) => {
   const { videoId } = route?.params;
@@ -27,6 +20,7 @@ const VideoPlayer = ({ route }) => {
   const [currentTimeInSeconds, setCurrentTimeInSeconds] = useState<number>(0);
   const [downPressedTimes, setDownPressedTimes] = useState<number>(0);
   const [audioTrack, setAudioTrack] = useState<number>(0);
+  const [videoError, setVideoError] = useState<any>(null);
   
   let player: any = useRef();
   const myTVEventHandler = (evt: HWEvent) => {
@@ -42,15 +36,12 @@ const VideoPlayer = ({ route }) => {
       ToastAndroid.showWithGravity('-10', ToastAndroid.SHORT, ToastAndroid.CENTER);
       player.current.seek(currentTimeInSeconds - 10);
     } else if (type === 'down') {
-      console.log('Down pressed');
       setDownPressedTimes(downPressedTimes + 1);
       if (downPressedTimes > 0) {
-        console.log('Switching audio track');
         setAudioTrack(audioTrack + 1);
         setDownPressedTimes(0);
       }
       if (audioTrack >= 3) {
-        console.log('RESETING audio track');
         setAudioTrack(0);
       }
     }
@@ -61,17 +52,16 @@ const VideoPlayer = ({ route }) => {
   }
 
   const onVideoError = (error: any) => {
-    console.log(`Error: ${JSON.stringify(error, null, 2)}`);
+    setVideoError(JSON.stringify(error, null, 2));
   }
 
   const onProgress = (data: any ): void => {
     setCurrentTimeInSeconds(data.currentTime);
   };
 
-  const onLoad = (data) => console.log(JSON.stringify(data, null, 2));
-
   return (
     <SafeAreaView>
+      <Debug name="video error" data={videoError} />
       <View>
         <Video source={{ uri: `http://192.168.1.9:8080/api/v1/play/${videoId}` }}   // Can be a URL or a local file.
           fullscreen={true}
@@ -85,7 +75,6 @@ const VideoPlayer = ({ route }) => {
             type: 'index',
             value: audioTrack
           }}
-          onLoad={onLoad}
           style={styles.backgroundVideo} />
           {/* <Text style={{ position: 'absolute', top: 300, left: 300, zIndex: 10000, fontSize: 20, color: 'white', backgroundColor: 'red'}}>Buffering: {buffering}</Text>*/}
       </View>
