@@ -1,11 +1,4 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
-import React, {useEffect, useState, useCallback, useRef} from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 import axios from 'axios';
 import {
   ActivityIndicator,
@@ -34,7 +27,6 @@ import {
   useTVEventHandler,
   HWEvent,
   Platform,
-  Pressable,
 } from 'react-native';
 
 import {SomeBoxFileInfo} from '../constants';
@@ -43,11 +35,11 @@ import Debug from '../components/debug';
 function List(): JSX.Element {
   const navigation = useNavigation();
   const [eventName, setEventName] = useState<string>('');
-  const [movies, setMovies] = useState([]);
+  const [movies, setMovies] = useState<SomeBoxFileInfo | undefined>(undefined);
   const [errorMessage, setErrorMessage] = useState<any>(null);
 
   const fetchMovies = async () => {
-    setMovies([]);
+    setMovies(undefined);
     setErrorMessage(null);
     try {
       const m = await axios.get('http://192.168.1.9:8080/api/v1/list');
@@ -71,12 +63,12 @@ function List(): JSX.Element {
   }
 
   const renderMovies = useCallback(
-    movies => {
-      if (!movies || movies.length === 0) {
+    (moviesData: SomeBoxFileInfo[]) => {
+      if (!moviesData || moviesData.length === 0) {
         return <ActivityIndicator size="large" />;
       }
 
-      movies.sort((a: SomeBoxFileInfo, b: SomeBoxFileInfo) => {
+      moviesData.sort((a: SomeBoxFileInfo, b: SomeBoxFileInfo) => {
         if (a.filename > b.filename) {
           return 1;
         } else if (a.filename < b.filename) {
@@ -88,8 +80,8 @@ function List(): JSX.Element {
 
       const rows = [];
 
-      for (let i = 0; i < movies.length; i += 4) {
-        rows.push(movies.slice(i, i + 4));
+      for (let i = 0; i < moviesData.length; i += 4) {
+        rows.push(moviesData.slice(i, i + 4));
       }
 
       return (
@@ -152,7 +144,7 @@ function List(): JSX.Element {
                 {...props}
               />
               <IconButton
-              onPress={fetchMovies}
+                onPress={fetchMovies}
                 icon={props => (
                   <FontAwesomeIcon
                     icon={faArrowsRotate}
