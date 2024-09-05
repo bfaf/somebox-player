@@ -12,10 +12,12 @@ import {
   TouchableOpacity,
   ToastAndroid
 } from 'react-native';
+import {useNavigation} from '@react-navigation/native';
 import Debug from '../components/debug';
 
 const VideoPlayer = ({ route }) => {
   const { videoId } = route?.params;
+  const navigation = useNavigation();
   const [isPaused, setIsPaused] = useState<boolean>(false);
   const [currentTimeInSeconds, setCurrentTimeInSeconds] = useState<number>(0);
   const [downPressedTimes, setDownPressedTimes] = useState<number>(0);
@@ -70,11 +72,12 @@ const VideoPlayer = ({ route }) => {
           onError={onVideoError}
           ref={player}
           onProgress={onProgress}
-          repeat={true}
+          repeat={false}
           selectedAudioTrack={{
             type: 'index',
             value: audioTrack
           }}
+          onEnd={() => navigation.goBack()}
           style={styles.backgroundVideo} />
           {/* <Text style={{ position: 'absolute', top: 300, left: 300, zIndex: 10000, fontSize: 20, color: 'white', backgroundColor: 'red'}}>Buffering: {buffering}</Text>*/}
       </View>
