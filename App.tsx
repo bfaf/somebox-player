@@ -9,7 +9,7 @@ import React from 'react';
 import SomeBoxPlayerStack from './src/stacks';
 import { NavigationContainer } from '@react-navigation/native';
 
-function App(): JSX.Element {
+function App(): React.JSX.Element {
 
   return (
     <NavigationContainer>
