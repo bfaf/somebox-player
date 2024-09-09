@@ -73,11 +73,13 @@ const VideoPlayer = ({ route }) => {
           ref={player}
           onProgress={onProgress}
           repeat={false}
+          controls={true}
           selectedAudioTrack={{
             type: 'index',
             value: audioTrack
           }}
           onEnd={() => navigation.goBack()}
+          useTextureView={false}
           style={styles.backgroundVideo} />
           {/* <Text style={{ position: 'absolute', top: 300, left: 300, zIndex: 10000, fontSize: 20, color: 'white', backgroundColor: 'red'}}>Buffering: {buffering}</Text>*/}
       </View>

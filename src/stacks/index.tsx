@@ -5,7 +5,7 @@ import VideoPlayer from './video-player';
 
 const Stack = createNativeStackNavigator();
 
-const SomeBoxPlayerStack = () => {
+const SomeBoxPlayerStack = (): React.JSX.Element => {
     return (
       <Stack.Navigator screenOptions={{
         headerBackVisible: false,
