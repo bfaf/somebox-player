@@ -6,7 +6,7 @@ buildscript {
         minSdkVersion = 23
         compileSdkVersion = 34
         targetSdkVersion = 34
-        ndkVersion = "26.2.11394342"
+        ndkVersion = "27.2.12479018"
         kotlinVersion = "1.9.24"
         supportLibVersion = "28.0.0"
     }
@@ -20,5 +20,20 @@ buildscript {
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
     }
 }
+
+// Uncomment this code to disable linting for all projects
+// Useful when yarn build is failing
+// allprojects {
+//     // append here
+//     afterEvaluate {
+//         if (getPlugins().hasPlugin('android') ||
+//             getPlugins().hasPlugin('android-library')) {
+//             configure(android.lintOptions) {
+//                 abortOnError false
+//                 checkReleaseBuilds false
+//             }
+//         }
+//     }
+// }
 
 apply plugin: "com.facebook.react.rootproject"

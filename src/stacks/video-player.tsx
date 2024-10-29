@@ -21,7 +21,6 @@ const VideoPlayer = ({ route }) => {
   const [isPaused, setIsPaused] = useState<boolean>(false);
   const [currentTimeInSeconds, setCurrentTimeInSeconds] = useState<number>(0);
   const [downPressedTimes, setDownPressedTimes] = useState<number>(0);
-  const [audioTrack, setAudioTrack] = useState<number>(0);
   const [videoError, setVideoError] = useState<any>(null);
   
   let player: any = useRef();
@@ -37,15 +36,6 @@ const VideoPlayer = ({ route }) => {
     } else if (type === 'rewind') {
       ToastAndroid.showWithGravity('-10', ToastAndroid.SHORT, ToastAndroid.CENTER);
       player.current.seek(currentTimeInSeconds - 10);
-    } else if (type === 'down') {
-      setDownPressedTimes(downPressedTimes + 1);
-      if (downPressedTimes > 0) {
-        setAudioTrack(audioTrack + 1);
-        setDownPressedTimes(0);
-      }
-      if (audioTrack >= 3) {
-        setAudioTrack(0);
-      }
     }
   };
 
@@ -66,20 +56,13 @@ const VideoPlayer = ({ route }) => {
       <Debug name="video error" data={videoError} />
       <View>
         <Video source={{ uri: `http://192.168.1.9:8080/api/v1/play/${videoId}` }}   // Can be a URL or a local file.
-          fullscreen={true}
           resizeMode="cover"
           paused={isPaused}
           onError={onVideoError}
           ref={player}
           onProgress={onProgress}
           repeat={false}
-          controls={true}
-          selectedAudioTrack={{
-            type: 'index',
-            value: audioTrack
-          }}
           onEnd={() => navigation.goBack()}
-          useTextureView={false}
           style={styles.backgroundVideo} />
           {/* <Text style={{ position: 'absolute', top: 300, left: 300, zIndex: 10000, fontSize: 20, color: 'white', backgroundColor: 'red'}}>Buffering: {buffering}</Text>*/}
       </View>
