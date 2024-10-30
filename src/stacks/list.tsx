@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useCallback} from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import {
   ActivityIndicator,
@@ -7,13 +7,13 @@ import {
   VStack,
   IconButton,
 } from '@react-native-material/core';
-import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import {
   faArrowsRotate,
   faEllipsisVertical,
   faMagnifyingGlass,
 } from '@fortawesome/free-solid-svg-icons';
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 
 import {
   SafeAreaView,
@@ -29,20 +29,25 @@ import {
   Platform,
 } from 'react-native';
 
-import {SomeBoxFileInfo} from '../constants';
+import { MovieData } from '../constants';
 import Debug from '../components/debug';
 
 function List(): JSX.Element {
   const navigation = useNavigation();
   const [eventName, setEventName] = useState<string>('');
-  const [movies, setMovies] = useState<SomeBoxFileInfo | undefined>(undefined);
+  const [movies, setMovies] = useState<MovieData | undefined>(undefined);
   const [errorMessage, setErrorMessage] = useState<any>(null);
+
+  // Prevent going back
+  React.useEffect(() => navigation.addListener('beforeRemove', (e) => {
+    e.preventDefault();
+  }), []);
 
   const fetchMovies = async () => {
     setMovies(undefined);
     setErrorMessage(null);
     try {
-      const m = await axios.get('http://192.168.1.9:8080/api/v1/list');
+      const m = await axios.get('http://192.168.1.9:8080/api/v1/list'); // replace redux with action
       // console.log('response', JSON.stringify(m.data, null, 2));
       setMovies(m.data);
     } catch (err) {
@@ -63,20 +68,10 @@ function List(): JSX.Element {
   }
 
   const renderMovies = useCallback(
-    (moviesData: SomeBoxFileInfo[]) => {
+    (moviesData: MovieData[]) => {
       if (!moviesData || moviesData.length === 0) {
         return <ActivityIndicator size="large" />;
       }
-
-      moviesData.sort((a: SomeBoxFileInfo, b: SomeBoxFileInfo) => {
-        if (a.filename > b.filename) {
-          return 1;
-        } else if (a.filename < b.filename) {
-          return -1;
-        }
-
-        return 0;
-      });
 
       const rows = [];
 
@@ -94,26 +89,27 @@ function List(): JSX.Element {
           }}>
           {rows.map((row, idx: number) => (
             <HStack m={30} spacing={8} key={idx}>
-              {row.map((r: SomeBoxFileInfo, innerIdx: number) => (
+              {row.map((r: MovieData, innerIdx: number) => (
                 <View
                   key={r.filename}
-                  style={{display: 'flex', flexDirection: 'row'}}>
+                  style={{ display: 'flex', flexDirection: 'row' }}>
                   <TouchableOpacity
                     key={r.filename}
                     hasTVPreferredFocus={idx === 0 && innerIdx === 0}
                     onPress={() =>
-                      navigation.navigate('Player', {videoId: r.filename})
+                      navigation.navigate('Player', { videoId: r.movieId })
                     }>
                     <Image
                       source={{
-                        uri: `http://192.168.1.9:8080/api/v1/image/${r.filename}`,
+                        uri: `data:image/png;base64,${r.moviesMetadataEntity.poster}`,
                       }}
-                      style={{width: 180, height: 101}}
+                      resizeMode='cover'
+                      style={{ width: 120, height: 179 }}
                     />
                     <Text
                       numberOfLines={1}
-                      style={{fontSize: 14, width: 180, color: 'grey'}}>
-                      {r.filename}
+                      style={{ fontSize: 14, width: 120, color: 'grey' }}>
+                      {r.name}
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -131,14 +127,14 @@ function List(): JSX.Element {
       <View>
         <AppBar
           title="SomeBox Player"
-          style={{marginBottom: 0, paddingBottom: 0}}
+          style={{ marginBottom: 0, paddingBottom: 0 }}
           trailing={props => (
             <HStack>
               <IconButton
                 icon={props => (
                   <FontAwesomeIcon
                     icon={faMagnifyingGlass}
-                    style={{color: 'white'}}
+                    style={{ color: 'white' }}
                   />
                 )}
                 {...props}
@@ -148,7 +144,7 @@ function List(): JSX.Element {
                 icon={props => (
                   <FontAwesomeIcon
                     icon={faArrowsRotate}
-                    style={{color: 'white'}}
+                    style={{ color: 'white' }}
                   />
                 )}
                 {...props}
@@ -157,7 +153,7 @@ function List(): JSX.Element {
                 icon={props => (
                   <FontAwesomeIcon
                     icon={faEllipsisVertical}
-                    style={{color: 'white'}}
+                    style={{ color: 'white' }}
                   />
                 )}
                 {...props}
@@ -167,7 +163,7 @@ function List(): JSX.Element {
         />
       </View>
 
-      <ScrollView style={{marginBottom: 50}}>
+      <ScrollView style={{ marginBottom: 50 }}>
         <>
           {renderMovies(movies)}
           <Debug name="errorMessage" data={errorMessage} />

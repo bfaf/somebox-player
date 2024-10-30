@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import axios from 'axios';
 import Video from 'react-native-video';
 import {
   SafeAreaView,
@@ -12,7 +13,7 @@ import {
   TouchableOpacity,
   ToastAndroid
 } from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import Debug from '../components/debug';
 
 const VideoPlayer = ({ route }) => {
@@ -22,7 +23,7 @@ const VideoPlayer = ({ route }) => {
   const [currentTimeInSeconds, setCurrentTimeInSeconds] = useState<number>(0);
   const [downPressedTimes, setDownPressedTimes] = useState<number>(0);
   const [videoError, setVideoError] = useState<any>(null);
-  
+
   let player: any = useRef();
   const myTVEventHandler = (evt: HWEvent) => {
     const type = evt.eventType;
@@ -47,7 +48,7 @@ const VideoPlayer = ({ route }) => {
     setVideoError(JSON.stringify(error, null, 2));
   }
 
-  const onProgress = (data: any ): void => {
+  const onProgress = (data: any): void => {
     setCurrentTimeInSeconds(data.currentTime);
   };
 
@@ -55,7 +56,12 @@ const VideoPlayer = ({ route }) => {
     <SafeAreaView>
       <Debug name="video error" data={videoError} />
       <View>
-        <Video source={{ uri: `http://192.168.1.9:8080/api/v1/play/${videoId}` }}   // Can be a URL or a local file.
+        <Video source={{
+          uri: `http://192.168.1.9:8080/api/v1/play/${videoId}`,
+          headers: {
+            Authorization: axios.defaults.headers.common['Authorization'],
+          }
+        }}
           resizeMode="cover"
           paused={isPaused}
           onError={onVideoError}
@@ -64,11 +70,11 @@ const VideoPlayer = ({ route }) => {
           repeat={false}
           onEnd={() => navigation.goBack()}
           style={styles.backgroundVideo} />
-          {/* <Text style={{ position: 'absolute', top: 300, left: 300, zIndex: 10000, fontSize: 20, color: 'white', backgroundColor: 'red'}}>Buffering: {buffering}</Text>*/}
+        {/* <Text style={{ position: 'absolute', top: 300, left: 300, zIndex: 10000, fontSize: 20, color: 'white', backgroundColor: 'red'}}>Buffering: {buffering}</Text>*/}
       </View>
       <View>
-          <TouchableOpacity><Text>Some item to navigate 1</Text></TouchableOpacity>
-          <TouchableOpacity><Text>Some item to navigate 2</Text></TouchableOpacity>
+        <TouchableOpacity><Text>Some item to navigate 1</Text></TouchableOpacity>
+        <TouchableOpacity><Text>Some item to navigate 2</Text></TouchableOpacity>
       </View>
     </SafeAreaView>
   );

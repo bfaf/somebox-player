@@ -7,13 +7,17 @@
 
 import React from 'react';
 import SomeBoxPlayerStack from './src/stacks';
+import { Provider as StoreProvider } from 'react-redux';
 import { NavigationContainer } from '@react-navigation/native';
+import { setupStore } from './src/redux/store';
 
 function App(): React.JSX.Element {
 
   return (
     <NavigationContainer>
-      <SomeBoxPlayerStack />
+      <StoreProvider store={setupStore({})}>
+        <SomeBoxPlayerStack />
+      </StoreProvider>
     </NavigationContainer>
   );
 }
