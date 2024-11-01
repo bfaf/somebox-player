@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Video from 'react-native-video';
 import {
   SafeAreaView,
@@ -10,19 +10,26 @@ import {
   Platform,
   Text,
   TouchableOpacity,
-  ToastAndroid
+  ToastAndroid,
+  ActivityIndicator
 } from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import Debug from '../components/debug';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../redux/store';
+import { refreshAccessToken } from '../redux/thunks/login';
 
 const VideoPlayer = ({ route }) => {
   const { videoId } = route?.params;
+  const dispatch: AppDispatch = useDispatch();
   const navigation = useNavigation();
   const [isPaused, setIsPaused] = useState<boolean>(false);
   const [currentTimeInSeconds, setCurrentTimeInSeconds] = useState<number>(0);
-  const [downPressedTimes, setDownPressedTimes] = useState<number>(0);
   const [videoError, setVideoError] = useState<any>(null);
-  
+  const [accessToken, setAccessToken] = useState<string>(undefined);
+  const [baseURL, setBaseURL] = useState<string>(undefined);
+
   let player: any = useRef();
   const myTVEventHandler = (evt: HWEvent) => {
     const type = evt.eventType;
@@ -47,15 +54,39 @@ const VideoPlayer = ({ route }) => {
     setVideoError(JSON.stringify(error, null, 2));
   }
 
-  const onProgress = (data: any ): void => {
+  const onProgress = (data: any): void => {
     setCurrentTimeInSeconds(data.currentTime);
   };
+
+  useEffect(() => {
+    const getAccessToken = async () => {
+      await dispatch(refreshAccessToken());
+      const accessToken = await AsyncStorage.getItem("SOMEBOX_ACCESS_TOKEN");
+      const baseURL = await AsyncStorage.getItem("SOMEBOX_BASE_URL_ADDRESS");
+      setAccessToken(accessToken);
+      setBaseURL(baseURL);
+    }
+    getAccessToken();
+
+    return () => {
+      setAccessToken(undefined);
+    }
+  }, [setAccessToken]);
+
+  if (accessToken == null || baseURL == null) {
+    return <ActivityIndicator size="large" />;
+  }
 
   return (
     <SafeAreaView>
       <Debug name="video error" data={videoError} />
-      <View>
-        <Video source={{ uri: `http://192.168.1.9:8080/api/v1/play/${videoId}` }}   // Can be a URL or a local file.
+      <View style={styles.backgroundVideo}>
+        <Video source={{
+          uri: `${baseURL}/play/${videoId}`,
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          }
+        }}
           resizeMode="cover"
           paused={isPaused}
           onError={onVideoError}
@@ -64,12 +95,12 @@ const VideoPlayer = ({ route }) => {
           repeat={false}
           onEnd={() => navigation.goBack()}
           style={styles.backgroundVideo} />
-          {/* <Text style={{ position: 'absolute', top: 300, left: 300, zIndex: 10000, fontSize: 20, color: 'white', backgroundColor: 'red'}}>Buffering: {buffering}</Text>*/}
+        {/* <Text style={{ position: 'absolute', top: 300, left: 300, zIndex: 10000, fontSize: 20, color: 'white', backgroundColor: 'red'}}>Buffering: {buffering}</Text>*/}
       </View>
-      <View>
-          <TouchableOpacity><Text>Some item to navigate 1</Text></TouchableOpacity>
-          <TouchableOpacity><Text>Some item to navigate 2</Text></TouchableOpacity>
-      </View>
+      {/* <View>
+        <TouchableOpacity><Text>Some item to navigate 1</Text></TouchableOpacity>
+        <TouchableOpacity><Text>Some item to navigate 2</Text></TouchableOpacity>
+      </View> */}
     </SafeAreaView>
   );
 };

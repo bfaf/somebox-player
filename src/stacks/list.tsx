@@ -1,5 +1,4 @@
-import React, {useEffect, useState, useCallback} from 'react';
-import axios from 'axios';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   ActivityIndicator,
   AppBar,
@@ -7,13 +6,13 @@ import {
   VStack,
   IconButton,
 } from '@react-native-material/core';
-import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import {
   faArrowsRotate,
   faEllipsisVertical,
   faMagnifyingGlass,
 } from '@fortawesome/free-solid-svg-icons';
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 
 import {
   SafeAreaView,
@@ -29,30 +28,40 @@ import {
   Platform,
 } from 'react-native';
 
-import {SomeBoxFileInfo} from '../constants';
+import { MovieData } from '../constants';
 import Debug from '../components/debug';
+import { AppDispatch } from '../redux/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectErrorMovies, selectIsLoadedMovies, selectIsLoadingMovies, selectMovies } from '../redux/slices/moviesSlice';
+import { fetchMovies } from '../redux/thunks/movies';
+import { refreshAccessToken } from '../redux/thunks/login';
+
+const POSTER_WIDTH = 120;
+const POSTER_HEIGHT = 179;
+const POSTER_PADDING = 30;
 
 function List(): JSX.Element {
+  const dispatch: AppDispatch = useDispatch();
   const navigation = useNavigation();
   const [eventName, setEventName] = useState<string>('');
-  const [movies, setMovies] = useState<SomeBoxFileInfo | undefined>(undefined);
-  const [errorMessage, setErrorMessage] = useState<any>(null);
+  const movies = useSelector(selectMovies);
+  const isLoaded = useSelector(selectIsLoadedMovies);
+  const isLoading = useSelector(selectIsLoadingMovies);
+  const errorMessage = useSelector(selectErrorMovies);
 
-  const fetchMovies = async () => {
-    setMovies(undefined);
-    setErrorMessage(null);
-    try {
-      const m = await axios.get('http://192.168.1.9:8080/api/v1/list');
-      // console.log('response', JSON.stringify(m.data, null, 2));
-      setMovies(m.data);
-    } catch (err) {
-      setErrorMessage(err);
-    }
-  };
+  // Prevent going back
+  useEffect(() => navigation.addListener('beforeRemove', (e) => {
+    e.preventDefault();
+  }), []);
+  useEffect(() => navigation.addListener('focus', (e) => {
+    dispatch(refreshAccessToken());
+  }), []);
 
   useEffect(() => {
-    fetchMovies();
-  }, []);
+    if (!isLoaded && isLoading) {
+      dispatch(fetchMovies());
+    }
+  }, [isLoaded, isLoading]);
 
   const myTVEventHandler = (evt: HWEvent) => {
     setEventName(evt.eventType);
@@ -63,25 +72,12 @@ function List(): JSX.Element {
   }
 
   const renderMovies = useCallback(
-    (moviesData: SomeBoxFileInfo[]) => {
-      if (!moviesData || moviesData.length === 0) {
-        return <ActivityIndicator size="large" />;
-      }
-
-      moviesData.sort((a: SomeBoxFileInfo, b: SomeBoxFileInfo) => {
-        if (a.filename > b.filename) {
-          return 1;
-        } else if (a.filename < b.filename) {
-          return -1;
-        }
-
-        return 0;
-      });
-
+    (moviesData: MovieData[]) => {
       const rows = [];
+      const moviesPerRow = Math.floor(Dimensions.get('window').width / (POSTER_WIDTH + POSTER_PADDING));
 
-      for (let i = 0; i < moviesData.length; i += 4) {
-        rows.push(moviesData.slice(i, i + 4));
+      for (let i = 0; i < moviesData.length; i += moviesPerRow) {
+        rows.push(moviesData.slice(i, i + moviesPerRow));
       }
 
       return (
@@ -93,27 +89,31 @@ function List(): JSX.Element {
             width: '83%',
           }}>
           {rows.map((row, idx: number) => (
-            <HStack m={30} spacing={8} key={idx}>
-              {row.map((r: SomeBoxFileInfo, innerIdx: number) => (
+            <HStack m={POSTER_PADDING} spacing={8} key={idx}>
+              {row.map((r: MovieData, innerIdx: number) => (
                 <View
                   key={r.filename}
-                  style={{display: 'flex', flexDirection: 'row'}}>
+                  style={{ display: 'flex', flexDirection: 'row' }}>
                   <TouchableOpacity
                     key={r.filename}
                     hasTVPreferredFocus={idx === 0 && innerIdx === 0}
-                    onPress={() =>
-                      navigation.navigate('Player', {videoId: r.filename})
-                    }>
+                    onPress={() => {
+                      // console.log("Refreshing access token");
+                      // await dispatch(loginUser({ username: 'somebox-dev', password: 'somebox-dev' }));
+                      // console.log("Play the movie access token");
+                      navigation.navigate('Player', { videoId: r.movieId });
+                    }}>
                     <Image
                       source={{
-                        uri: `http://192.168.1.9:8080/api/v1/image/${r.filename}`,
+                        uri: `data:image/png;base64,${r.moviesMetadataEntity.poster}`,
                       }}
-                      style={{width: 180, height: 101}}
+                      resizeMode='cover'
+                      style={{ width: POSTER_WIDTH, height: POSTER_HEIGHT }}
                     />
                     <Text
-                      numberOfLines={1}
-                      style={{fontSize: 14, width: 180, color: 'grey'}}>
-                      {r.filename}
+                      numberOfLines={2}
+                      style={{ fontSize: 14, width: POSTER_WIDTH, color: 'grey' }}>
+                      {r.name}
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -126,29 +126,33 @@ function List(): JSX.Element {
     [navigation],
   );
 
+  if (isLoading || !movies) {
+    return <ActivityIndicator size="large" />;
+  }
+
   return (
     <SafeAreaView>
       <View>
         <AppBar
           title="SomeBox Player"
-          style={{marginBottom: 0, paddingBottom: 0}}
+          style={{ marginBottom: 0, paddingBottom: 0 }}
           trailing={props => (
             <HStack>
               <IconButton
                 icon={props => (
                   <FontAwesomeIcon
                     icon={faMagnifyingGlass}
-                    style={{color: 'white'}}
+                    style={{ color: 'white' }}
                   />
                 )}
                 {...props}
               />
               <IconButton
-                onPress={fetchMovies}
+                onPress={() => dispatch(fetchMovies())}
                 icon={props => (
                   <FontAwesomeIcon
                     icon={faArrowsRotate}
-                    style={{color: 'white'}}
+                    style={{ color: 'white' }}
                   />
                 )}
                 {...props}
@@ -157,7 +161,7 @@ function List(): JSX.Element {
                 icon={props => (
                   <FontAwesomeIcon
                     icon={faEllipsisVertical}
-                    style={{color: 'white'}}
+                    style={{ color: 'white' }}
                   />
                 )}
                 {...props}
@@ -167,7 +171,7 @@ function List(): JSX.Element {
         />
       </View>
 
-      <ScrollView style={{marginBottom: 50}}>
+      <ScrollView style={{ marginBottom: 50 }}>
         <>
           {renderMovies(movies)}
           <Debug name="errorMessage" data={errorMessage} />
