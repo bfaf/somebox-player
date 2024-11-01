@@ -23,3 +23,19 @@ export const loginUser = createAsyncThunk(
         }
     },
 );
+
+export const refreshAccessToken = createAsyncThunk(
+    'login/refreshAccessToken',
+    async (_, { rejectWithValue }) => {
+        try {
+            const refreshToken = await AsyncStorage.getItem("SOMEBOX_REFRESH_TOKEN");
+            const res = await api.post('/refreshToken', { refreshToken });
+            await AsyncStorage.setItem("SOMEBOX_ACCESS_TOKEN", res.data.access_token);
+            await AsyncStorage.setItem("SOMEBOX_REFRESH_TOKEN", res.data.refresh_token);
+
+            return res.data;
+        } catch (err) {
+            return rejectWithValue(err);
+        }
+    },
+);

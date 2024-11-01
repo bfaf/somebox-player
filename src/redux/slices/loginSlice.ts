@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { RootState } from '../store';
-import { loginUser } from '../thunks/login';
+import { loginUser, refreshAccessToken } from '../thunks/login';
 import { AxiosError } from 'axios';
 
 interface LoginState {
@@ -56,6 +56,16 @@ export const loginSlice = createSlice({
                 isLoginPerformed: true
             }
         })
+        // Don't know whether to catch this...
+        // .addCase(refreshAccessToken.rejected, (state, action) => {
+        //     return {
+        //         ...state,
+        //         error: undefined,
+        //         loggedIn: true,
+        //         isLoading: false,
+        //         isLoginPerformed: true
+        //     }
+        // })
     }
   });
   

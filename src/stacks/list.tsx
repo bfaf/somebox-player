@@ -32,8 +32,9 @@ import { MovieData } from '../constants';
 import Debug from '../components/debug';
 import { AppDispatch } from '../redux/store';
 import { useDispatch, useSelector } from 'react-redux';
-import { resetMoviesState, selectErrorMovies, selectIsLoadedMovies, selectIsLoadingMovies, selectMovies } from '../redux/slices/moviesSlice';
+import { selectErrorMovies, selectIsLoadedMovies, selectIsLoadingMovies, selectMovies } from '../redux/slices/moviesSlice';
 import { fetchMovies } from '../redux/thunks/movies';
+import { refreshAccessToken } from '../redux/thunks/login';
 
 const POSTER_WIDTH = 120;
 const POSTER_HEIGHT = 179;
@@ -53,7 +54,7 @@ function List(): JSX.Element {
     e.preventDefault();
   }), []);
   useEffect(() => navigation.addListener('focus', (e) => {
-    dispatch(resetMoviesState())
+    dispatch(refreshAccessToken());
   }), []);
 
   useEffect(() => {
@@ -73,7 +74,6 @@ function List(): JSX.Element {
   const renderMovies = useCallback(
     (moviesData: MovieData[]) => {
       const rows = [];
-
       const moviesPerRow = Math.floor(Dimensions.get('window').width / (POSTER_WIDTH + POSTER_PADDING));
 
       for (let i = 0; i < moviesData.length; i += moviesPerRow) {
@@ -97,9 +97,12 @@ function List(): JSX.Element {
                   <TouchableOpacity
                     key={r.filename}
                     hasTVPreferredFocus={idx === 0 && innerIdx === 0}
-                    onPress={() =>
-                      navigation.navigate('Player', { videoId: r.movieId })
-                    }>
+                    onPress={() => {
+                      // console.log("Refreshing access token");
+                      // await dispatch(loginUser({ username: 'somebox-dev', password: 'somebox-dev' }));
+                      // console.log("Play the movie access token");
+                      navigation.navigate('Player', { videoId: r.movieId });
+                    }}>
                     <Image
                       source={{
                         uri: `data:image/png;base64,${r.moviesMetadataEntity.poster}`,

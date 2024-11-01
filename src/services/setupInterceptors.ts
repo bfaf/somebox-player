@@ -60,7 +60,7 @@ export const createAxiosResponseInterceptor = () => {
                     return axiosInstance(originalConfig);
                 } else {
                     // navigate to login
-                    console.error('KRASIII cannot get refresh token from storage');
+                    console.error('cannot get refresh token from storage');
                 }
             } catch (err) {
                 return Promise.reject(err);

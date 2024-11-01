@@ -18,7 +18,7 @@ import Debug from '../components/debug';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../redux/store';
-import { resetMoviesState } from '../redux/slices/moviesSlice';
+import { refreshAccessToken } from '../redux/thunks/login';
 
 const VideoPlayer = ({ route }) => {
   const { videoId } = route?.params;
@@ -26,7 +26,6 @@ const VideoPlayer = ({ route }) => {
   const navigation = useNavigation();
   const [isPaused, setIsPaused] = useState<boolean>(false);
   const [currentTimeInSeconds, setCurrentTimeInSeconds] = useState<number>(0);
-  const [downPressedTimes, setDownPressedTimes] = useState<number>(0);
   const [videoError, setVideoError] = useState<any>(null);
   const [accessToken, setAccessToken] = useState<string>(undefined);
   const [baseURL, setBaseURL] = useState<string>(undefined);
@@ -61,6 +60,7 @@ const VideoPlayer = ({ route }) => {
 
   useEffect(() => {
     const getAccessToken = async () => {
+      await dispatch(refreshAccessToken());
       const accessToken = await AsyncStorage.getItem("SOMEBOX_ACCESS_TOKEN");
       const baseURL = await AsyncStorage.getItem("SOMEBOX_BASE_URL_ADDRESS");
       setAccessToken(accessToken);
@@ -97,10 +97,10 @@ const VideoPlayer = ({ route }) => {
           style={styles.backgroundVideo} />
         {/* <Text style={{ position: 'absolute', top: 300, left: 300, zIndex: 10000, fontSize: 20, color: 'white', backgroundColor: 'red'}}>Buffering: {buffering}</Text>*/}
       </View>
-      <View>
+      {/* <View>
         <TouchableOpacity><Text>Some item to navigate 1</Text></TouchableOpacity>
         <TouchableOpacity><Text>Some item to navigate 2</Text></TouchableOpacity>
-      </View>
+      </View> */}
     </SafeAreaView>
   );
 };
