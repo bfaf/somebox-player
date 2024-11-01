@@ -1,5 +1,4 @@
-import React, { useState, useRef } from 'react';
-import axios from 'axios';
+import React, { useState, useRef, useEffect } from 'react';
 import Video from 'react-native-video';
 import {
   SafeAreaView,
@@ -11,18 +10,26 @@ import {
   Platform,
   Text,
   TouchableOpacity,
-  ToastAndroid
+  ToastAndroid,
+  ActivityIndicator
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Debug from '../components/debug';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../redux/store';
+import { resetMoviesState } from '../redux/slices/moviesSlice';
 
 const VideoPlayer = ({ route }) => {
   const { videoId } = route?.params;
+  const dispatch: AppDispatch = useDispatch();
   const navigation = useNavigation();
   const [isPaused, setIsPaused] = useState<boolean>(false);
   const [currentTimeInSeconds, setCurrentTimeInSeconds] = useState<number>(0);
   const [downPressedTimes, setDownPressedTimes] = useState<number>(0);
   const [videoError, setVideoError] = useState<any>(null);
+  const [accessToken, setAccessToken] = useState<string>(undefined);
+  const [baseURL, setBaseURL] = useState<string>(undefined);
 
   let player: any = useRef();
   const myTVEventHandler = (evt: HWEvent) => {
@@ -52,14 +59,32 @@ const VideoPlayer = ({ route }) => {
     setCurrentTimeInSeconds(data.currentTime);
   };
 
+  useEffect(() => {
+    const getAccessToken = async () => {
+      const accessToken = await AsyncStorage.getItem("SOMEBOX_ACCESS_TOKEN");
+      const baseURL = await AsyncStorage.getItem("SOMEBOX_BASE_URL_ADDRESS");
+      setAccessToken(accessToken);
+      setBaseURL(baseURL);
+    }
+    getAccessToken();
+
+    return () => {
+      setAccessToken(undefined);
+    }
+  }, [setAccessToken]);
+
+  if (accessToken == null || baseURL == null) {
+    return <ActivityIndicator size="large" />;
+  }
+
   return (
     <SafeAreaView>
       <Debug name="video error" data={videoError} />
-      <View>
+      <View style={styles.backgroundVideo}>
         <Video source={{
-          uri: `http://192.168.1.9:8080/api/v1/play/${videoId}`,
+          uri: `${baseURL}/play/${videoId}`,
           headers: {
-            Authorization: axios.defaults.headers.common['Authorization'],
+            Authorization: `Bearer ${accessToken}`,
           }
         }}
           resizeMode="cover"

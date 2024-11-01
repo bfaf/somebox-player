@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import axios from 'axios';
 import {
   ActivityIndicator,
   AppBar,
@@ -31,33 +30,37 @@ import {
 
 import { MovieData } from '../constants';
 import Debug from '../components/debug';
+import { AppDispatch } from '../redux/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { resetMoviesState, selectErrorMovies, selectIsLoadedMovies, selectIsLoadingMovies, selectMovies } from '../redux/slices/moviesSlice';
+import { fetchMovies } from '../redux/thunks/movies';
+
+const POSTER_WIDTH = 120;
+const POSTER_HEIGHT = 179;
+const POSTER_PADDING = 30;
 
 function List(): JSX.Element {
+  const dispatch: AppDispatch = useDispatch();
   const navigation = useNavigation();
   const [eventName, setEventName] = useState<string>('');
-  const [movies, setMovies] = useState<MovieData | undefined>(undefined);
-  const [errorMessage, setErrorMessage] = useState<any>(null);
+  const movies = useSelector(selectMovies);
+  const isLoaded = useSelector(selectIsLoadedMovies);
+  const isLoading = useSelector(selectIsLoadingMovies);
+  const errorMessage = useSelector(selectErrorMovies);
 
   // Prevent going back
-  React.useEffect(() => navigation.addListener('beforeRemove', (e) => {
+  useEffect(() => navigation.addListener('beforeRemove', (e) => {
     e.preventDefault();
   }), []);
-
-  const fetchMovies = async () => {
-    setMovies(undefined);
-    setErrorMessage(null);
-    try {
-      const m = await axios.get('http://192.168.1.9:8080/api/v1/list'); // replace redux with action
-      // console.log('response', JSON.stringify(m.data, null, 2));
-      setMovies(m.data);
-    } catch (err) {
-      setErrorMessage(err);
-    }
-  };
+  useEffect(() => navigation.addListener('focus', (e) => {
+    dispatch(resetMoviesState())
+  }), []);
 
   useEffect(() => {
-    fetchMovies();
-  }, []);
+    if (!isLoaded && isLoading) {
+      dispatch(fetchMovies());
+    }
+  }, [isLoaded, isLoading]);
 
   const myTVEventHandler = (evt: HWEvent) => {
     setEventName(evt.eventType);
@@ -69,14 +72,12 @@ function List(): JSX.Element {
 
   const renderMovies = useCallback(
     (moviesData: MovieData[]) => {
-      if (!moviesData || moviesData.length === 0) {
-        return <ActivityIndicator size="large" />;
-      }
-
       const rows = [];
 
-      for (let i = 0; i < moviesData.length; i += 4) {
-        rows.push(moviesData.slice(i, i + 4));
+      const moviesPerRow = Math.floor(Dimensions.get('window').width / (POSTER_WIDTH + POSTER_PADDING));
+
+      for (let i = 0; i < moviesData.length; i += moviesPerRow) {
+        rows.push(moviesData.slice(i, i + moviesPerRow));
       }
 
       return (
@@ -88,7 +89,7 @@ function List(): JSX.Element {
             width: '83%',
           }}>
           {rows.map((row, idx: number) => (
-            <HStack m={30} spacing={8} key={idx}>
+            <HStack m={POSTER_PADDING} spacing={8} key={idx}>
               {row.map((r: MovieData, innerIdx: number) => (
                 <View
                   key={r.filename}
@@ -104,11 +105,11 @@ function List(): JSX.Element {
                         uri: `data:image/png;base64,${r.moviesMetadataEntity.poster}`,
                       }}
                       resizeMode='cover'
-                      style={{ width: 120, height: 179 }}
+                      style={{ width: POSTER_WIDTH, height: POSTER_HEIGHT }}
                     />
                     <Text
-                      numberOfLines={1}
-                      style={{ fontSize: 14, width: 120, color: 'grey' }}>
+                      numberOfLines={2}
+                      style={{ fontSize: 14, width: POSTER_WIDTH, color: 'grey' }}>
                       {r.name}
                     </Text>
                   </TouchableOpacity>
@@ -121,6 +122,10 @@ function List(): JSX.Element {
     },
     [navigation],
   );
+
+  if (isLoading || !movies) {
+    return <ActivityIndicator size="large" />;
+  }
 
   return (
     <SafeAreaView>
@@ -140,7 +145,7 @@ function List(): JSX.Element {
                 {...props}
               />
               <IconButton
-                onPress={fetchMovies}
+                onPress={() => dispatch(fetchMovies())}
                 icon={props => (
                   <FontAwesomeIcon
                     icon={faArrowsRotate}

@@ -1,5 +1,6 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import axios from 'axios';
+import api from '../../services/api';
 
 type UserLogin = {
     username: string;
@@ -10,7 +11,12 @@ export const loginUser = createAsyncThunk(
     'login/loginUser',
     async (value: UserLogin, { rejectWithValue }) => {
         try {
-            const res = await axios.post('http://192.168.1.9:8080/api/v1/login', { ...value });
+            await AsyncStorage.removeItem("SOMEBOX_ACCESS_TOKEN");
+            await AsyncStorage.removeItem("SOMEBOX_REFRESH_TOKEN");
+            const res = await api.post('/login', { ...value });
+            await AsyncStorage.setItem("SOMEBOX_ACCESS_TOKEN", res.data.access_token);
+            await AsyncStorage.setItem("SOMEBOX_REFRESH_TOKEN", res.data.refresh_token);
+
             return res.data;
         } catch (err) {
             return rejectWithValue(err);

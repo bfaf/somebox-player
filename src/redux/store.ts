@@ -1,8 +1,10 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit'
 import loginReducer from './slices/loginSlice';
+import moviesReducer from './slices/moviesSlice'
 
 const rootReducer = combineReducers({
     login: loginReducer,
+    movies: moviesReducer,
 });
 
 export const setupStore = (preloadedState?: RootState) => {
