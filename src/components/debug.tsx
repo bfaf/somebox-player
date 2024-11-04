@@ -1,24 +1,37 @@
-import React from 'react';
-import {View, Text} from 'react-native';
+import React, { useEffect } from 'react';
+import { Alert } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
-const Debug = props => {
-  const { name, data} = props;
+type AlertProps = {
+  data: unknown;
+}
+
+const Debug = ({ data }: AlertProps) => {
+  const navigation = useNavigation();
+
   let newData = data;
   if (typeof data === 'object') {
     newData = JSON.stringify(data, null, 2);
   }
 
-  if (!data) {
-    return <></>;
-  }
+  useEffect(() => {
+    if (newData != null) {
+      Alert.alert(
+        'Something went wrong',
+        `${newData}`,
+        [
+          {
+            text: 'OK',
+            onPress: () => navigation.goBack(),
+            style: 'destructive',
+          },
+        ],
+        { cancelable: false },
+      );
+    }
+  }, [newData]);
 
-  return (
-    <View>
-      <Text style={{ color: 'black', fontSize: 16, fontWeight: 600}}>------------start {name}------------</Text>
-      <Text style={{ color: 'black'}}>{newData}</Text>
-      <Text style={{ color: 'black', fontSize: 16, fontWeight: 600}}>------------end {name}------------</Text>
-    </View>
-  );
+  return (<></>);
 };
 
 export default Debug;
