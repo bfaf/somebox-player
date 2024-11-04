@@ -5,8 +5,8 @@ import { AppDispatch } from '../redux/store';
 import { loginUser } from '../redux/thunks/login';
 import { useNavigation } from '@react-navigation/native';
 import { selectIsLoginLoading, selectIsLoginPerformed, selectLoggedIn, selectLoginError } from '../redux/slices/loginSlice';
-import { SafeAreaView, StyleSheet, View, Text, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { AppBar, HStack, IconButton } from '@react-native-material/core';
+import { SafeAreaView, StyleSheet, View, Text, TextInput, TouchableOpacity, ActivityIndicator, Image } from 'react-native';
+import { IconButton } from '@react-native-material/core';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faGear } from '@fortawesome/free-solid-svg-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -15,13 +15,22 @@ const styles = StyleSheet.create({
     container: {
         width: '30%',
         marginLeft: 'auto',
-        marginRight: 'auto'
+        marginRight: 'auto',
+        marginTop: 50,
     },
     input: {
         height: 40,
         margin: 12,
         borderWidth: 1,
         padding: 10,
+        width: '75%'
+    },
+    usernameInput: {
+        height: 40,
+        margin: 12,
+        borderWidth: 1,
+        padding: 10,
+        flexGrow: 3
     },
     button: {
         alignItems: 'center',
@@ -32,6 +41,16 @@ const styles = StyleSheet.create({
         color: 'white',
         fontWeight: '600',
         fontSize: 20
+    },
+    inputWithButton: {
+        flexDirection: 'row',
+        flexGrow: 3,
+        alignItems: 'center'
+    },
+    logo: {
+        marginTop: 50,
+        marginLeft: 'auto',
+        marginRight: 'auto'
     }
 });
 
@@ -61,7 +80,8 @@ const Login = (): JSX.Element => {
             }
         }
         if (loginErrorMessage == null && !isLoginPerformed) {
-            autoLogin();
+            // autoLogin();
+            setShowForm(true);
         }
     }, [loginErrorMessage, isLoginPerformed, login, setShowForm]);
 
@@ -78,32 +98,15 @@ const Login = (): JSX.Element => {
     return (
         <SafeAreaView>
             <View>
-                <AppBar
-                    title="SomeBox Player Login screen"
-                    style={{ marginBottom: 0, paddingBottom: 0 }}
-                    trailing={props => (
-                        <HStack>
-                            <IconButton
-                                icon={props => (
-                                    <FontAwesomeIcon
-                                        icon={faGear}
-                                        style={{ color: 'white' }}
-                                    />
-                                )}
-                                {...props}
-                            />
-                        </HStack>
-                    )}
-                />
+                <Image style={styles.logo} source={require('../images/logo.png')} />
             </View>
-
             <View style={styles.container}>
                 {loginErrorMessage != null && (<View>
                     <Text>{loginErrorMessage}</Text>
                 </View>)}
-                <View>
+                <View style={styles.inputWithButton}>
                     <TextInput
-                        style={styles.input}
+                        style={styles.usernameInput}
                         // contentStyle={styles.applyButtonContent}
                         placeholder="Username"
                         mode="outlined"
@@ -112,6 +115,15 @@ const Login = (): JSX.Element => {
                         onChangeText={(text) => setUsername(text)}
                         keyboardType="default"
                         autoFocus={true}
+                    />
+                    <IconButton
+                        icon={props => (
+                            <FontAwesomeIcon
+                                icon={faGear}
+                                style={{ color: 'black' }}
+                            />
+                        )}
+                        onPress={() => navigation.navigate('LoginSettings')}
                     />
                 </View>
                 <View>
@@ -129,7 +141,7 @@ const Login = (): JSX.Element => {
                 </View>
                 <View>
                     <TouchableOpacity
-                        key={login}
+                        key='login'
                         style={styles.button}
                         onPress={() => login(username, password)}>
                         <Text style={styles.buttonText}>Login</Text>

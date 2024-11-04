@@ -32,3 +32,20 @@ export const initialConfig = createAsyncThunk(
             return rejectWithValue(err);
         }
     });
+
+export const updateIpAddress = createAsyncThunk(
+    'settings/updateIpAddress',
+    async (ipAddress: string, { fulfillWithValue, rejectWithValue }) => {
+        try {
+            const newConfig = {
+                serverIp: ipAddress,
+                baseUrl: `http://${ipAddress}:8080/api/v1`,
+            }
+            await AsyncStorage.setItem("SOMEBOX_SERVER_ADDRESS", newConfig.serverIp);
+            await AsyncStorage.setItem("SOMEBOX_BASE_URL_ADDRESS", newConfig.baseUrl);
+
+            return fulfillWithValue(newConfig);
+        } catch (err) {
+            return rejectWithValue(err);
+        }
+    });

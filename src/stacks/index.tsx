@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Login from './login';
 import LoggedInStack from './loggedInStack';
 import InitSettings from './initSettings';
+import LoginSettings from './loginSettings';
 
 const Stack = createNativeStackNavigator();
 
@@ -15,6 +16,7 @@ const SomeBoxPlayerStack = (): React.JSX.Element => {
         <Stack.Screen name="InitSettings" component={InitSettings} />
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="LoggedInStack" component={LoggedInStack} />
+        <Stack.Screen name="LoginSettings" component={LoginSettings} />
       </Stack.Navigator>
     );
   }
