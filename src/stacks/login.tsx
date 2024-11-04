@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../redux/store';
-import { loginUser, refreshAccessToken } from '../redux/thunks/login';
+import { loginUser } from '../redux/thunks/login';
 import { useNavigation } from '@react-navigation/native';
 import { selectIsLoginLoading, selectIsLoginPerformed, selectLoggedIn, selectLoginError } from '../redux/slices/loginSlice';
 import { SafeAreaView, StyleSheet, View, Text, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
@@ -63,9 +63,6 @@ const Login = (): JSX.Element => {
         if (loginErrorMessage == null && !isLoginPerformed) {
             autoLogin();
         }
-        else if (loginErrorMessage != null && isLoginPerformed) {
-            setShowForm(true);
-        }
     }, [loginErrorMessage, isLoginPerformed, login, setShowForm]);
 
     useEffect(() => {
@@ -74,7 +71,7 @@ const Login = (): JSX.Element => {
         }
     }, [isLoggedIn]);
 
-    if (isLoading || !showForm) {
+    if (loginErrorMessage == null && (isLoading || !showForm)) {
         return <ActivityIndicator size="large" />;
     }
 

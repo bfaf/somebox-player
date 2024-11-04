@@ -3,11 +3,13 @@ import { RootState } from '../store';
 import { loginUser, refreshAccessToken } from '../thunks/login';
 import { AxiosError } from 'axios';
 
+const MAX_RETRY_ATTEMPTS = 3;
 interface LoginState {
     loggedIn: boolean,
     isLoading: boolean,
     isLoginPerformed: boolean,
     refreshTokenExpiresIn: number;
+    retryAttempts: number;
     error: unknown,
 }
 
@@ -17,6 +19,7 @@ const initialState: LoginState = {
     isLoading: false,
     isLoginPerformed: false,
     refreshTokenExpiresIn: 300,
+    retryAttempts: 0,
     error: undefined,
 }
 
@@ -24,12 +27,6 @@ export const loginSlice = createSlice({
     name: 'login',
     initialState,
     reducers: {
-        resetAccessTokenFreshness: (state) => {
-            return {
-                ...state,
-                isAccessTokenRefreshed: false
-            }
-        }
     },
     extraReducers: (builder) => {
         builder
@@ -41,10 +38,20 @@ export const loginSlice = createSlice({
                     loggedIn: true,
                     isLoading: false,
                     isLoginPerformed: true,
-                    refreshTokenExpiresIn: refresh_expires_in
+                    refreshTokenExpiresIn: refresh_expires_in,
+                    retryAttempts: 0,
                 }
             })
             .addCase(loginUser.pending, (state, action) => {
+                if (state.retryAttempts >= MAX_RETRY_ATTEMPTS) {
+                    return {
+                        ...state,
+                        loggedIn: false,
+                        error: 'Unable to login. Please check your internet connection',
+                        isLoading: false,
+                        isLoginPerformed: true,
+                    }
+                }
                 return {
                     ...state,
                     loggedIn: false,
@@ -60,7 +67,8 @@ export const loginSlice = createSlice({
                     loggedIn: false,
                     isLoading: false,
                     error: error.message,
-                    isLoginPerformed: false
+                    isLoginPerformed: false,
+                    retryAttempts: state.retryAttempts + 1,
                 }
             })
             .addCase(refreshAccessToken.fulfilled, (state, action) => {
@@ -89,7 +97,7 @@ export const loginSlice = createSlice({
     }
 });
 
-export const { resetAccessTokenFreshness } = loginSlice.actions
+// export const { resetAccessTokenFreshness } = loginSlice.actions
 
 // Other code such as selectors can use the imported `RootState` type
 export const selectLoggedIn = (state: RootState) => state.login.loggedIn;

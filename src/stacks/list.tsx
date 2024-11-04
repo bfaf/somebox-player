@@ -98,9 +98,6 @@ function List(): JSX.Element {
                     key={r.filename}
                     hasTVPreferredFocus={idx === 0 && innerIdx === 0}
                     onPress={() => {
-                      // console.log("Refreshing access token");
-                      // await dispatch(loginUser({ username: 'somebox-dev', password: 'somebox-dev' }));
-                      // console.log("Play the movie access token");
                       navigation.navigate('Player', { videoId: r.movieId });
                     }}>
                     <Image

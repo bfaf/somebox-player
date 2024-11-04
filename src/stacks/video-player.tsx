@@ -16,7 +16,6 @@ import Debug from '../components/debug';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../redux/store';
-import { useLoginTimeout } from '../hooks/useLoginTimeout';
 
 const VideoPlayer = ({ route }) => {
   const { videoId } = route?.params;
@@ -69,17 +68,6 @@ const VideoPlayer = ({ route }) => {
       setAccessToken(undefined);
     }
   }, [dispatch, setAccessToken]);
-
-  // useEffect(() => {
-  //   const interval = setInterval(() => dispatch(refreshAccessToken()), (accessTokenExpiresIn - 10) * 1000);
-  //   return () => clearInterval(interval);
-  // }, [accessTokenExpiresIn]);
-
-  // console.log((Date.now() - accessTokenTimestamp), ((accessTokenExpiresIn - 10) * 1000), ((Date.now() - accessTokenTimestamp) > (accessTokenExpiresIn - 10) * 1000));
-  // // - 10 seconds just to have enough time to refresh the access token
-  // if ((Date.now() - accessTokenTimestamp) > (accessTokenExpiresIn - 10) * 1000) {
-  //   dispatch(refreshAccessToken());
-  // }
 
   if (videoError != null) {
     return <Debug data={videoError} />

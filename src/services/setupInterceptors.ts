@@ -4,18 +4,11 @@ import axiosInstance from "./api";
 export const createAxiosResponseInterceptor = () => {
     axiosInstance.interceptors.request.use(
         async (config) => {
-            let serverAddress = await AsyncStorage.getItem("SOMEBOX_SERVER_ADDRESS");
-            if (serverAddress == null) {
-                serverAddress = '192.168.1.9';
-                await AsyncStorage.setItem("SOMEBOX_SERVER_ADDRESS", serverAddress);
-                await AsyncStorage.setItem("SOMEBOX_BASE_URL_ADDRESS", `http://${serverAddress}:8080/api/v1`);
-            }
             const accessToken = await AsyncStorage.getItem("SOMEBOX_ACCESS_TOKEN");
             if (accessToken != null) {
                 config.headers['Authorization'] = `Bearer ${accessToken}`;
             }
             config.baseURL = await AsyncStorage.getItem("SOMEBOX_BASE_URL_ADDRESS");
-            config.timeout = 5 * 1000;
 
             return config;
         },
@@ -25,9 +18,7 @@ export const createAxiosResponseInterceptor = () => {
         async (error) => {
             console.log('Error from interceptor: ', JSON.stringify(error, null, 2));
             const originalConfig = error.config;
-            // if (error.response == null || error.response.status == null) {
-            //     return Promise.reject(error);
-            // }
+
             // Reject promise if usual error
             if (error.response.status !== 401) {
                 return Promise.reject(error);

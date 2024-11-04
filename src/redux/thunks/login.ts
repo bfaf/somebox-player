@@ -13,6 +13,7 @@ export const loginUser = createAsyncThunk(
         try {
             // consider using react-native-keychain package to store username and password
             // https://oblador.github.io/react-native-keychain/docs/usage
+            // DO NOT remove these lines or login won't work
             await AsyncStorage.removeItem("SOMEBOX_ACCESS_TOKEN");
             await AsyncStorage.removeItem("SOMEBOX_REFRESH_TOKEN");
             const res = await api.post('/login', { ...value });

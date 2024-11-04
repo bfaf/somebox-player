@@ -13,7 +13,7 @@ const LoginRefresh = (props) => {
 
 const LoggedInStack = () => {
     return (
-        <Stack.Navigator initialRouteName="List" screenOptions={{
+        <Stack.Navigator id="AppNav" initialRouteName="List" screenOptions={{
             headerBackVisible: false,
             headerShown: false,
             headerTitle: (props) => <LoginRefresh {...props}/>
