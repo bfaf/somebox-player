@@ -3,10 +3,10 @@ import api from '../../services/api';
 
 export const fetchMovies = createAsyncThunk(
     'movies/fetch',
-    async (_, { rejectWithValue }) => {
+    async (_, { fulfillWithValue, rejectWithValue }) => {
         try {
             const res = await api.get('/list');
-            return res.data;
+            return fulfillWithValue(res.data);
         } catch (err) {
             return rejectWithValue(err);
         }

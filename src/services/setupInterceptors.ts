@@ -15,14 +15,19 @@ export const createAxiosResponseInterceptor = () => {
                 config.headers['Authorization'] = `Bearer ${accessToken}`;
             }
             config.baseURL = await AsyncStorage.getItem("SOMEBOX_BASE_URL_ADDRESS");
+            config.timeout = 5 * 1000;
 
             return config;
-    });
+        },
+        (error) => Promise.reject(error));
     const interceptor = axiosInstance.interceptors.response.use(
-        (response) => response,
+        (response) => Promise.resolve(response),
         async (error) => {
+            console.log('Error from interceptor: ', JSON.stringify(error, null, 2));
             const originalConfig = error.config;
-            originalConfig._retry = true;
+            // if (error.response == null || error.response.status == null) {
+            //     return Promise.reject(error);
+            // }
             // Reject promise if usual error
             if (error.response.status !== 401) {
                 return Promise.reject(error);
@@ -37,11 +42,14 @@ export const createAxiosResponseInterceptor = () => {
              */
             axiosInstance.interceptors.response.eject(interceptor);
 
+            if (originalConfig != null && !originalConfig._retry) {
+                originalConfig._retry = true;
+            }
+
             try {
                 const refreshToken = await AsyncStorage.getItem("SOMEBOX_REFRESH_TOKEN");
                 if (refreshToken != null) {
                     const baseURL = await AsyncStorage.getItem("SOMEBOX_BASE_URL_ADDRESS");
-                    await AsyncStorage.removeItem("SOMEBOX_ACCESS_TOKEN");
                     const response = await axiosInstance
                         .post(`${baseURL}/refreshToken`, {
                             refreshToken,
@@ -56,11 +64,8 @@ export const createAxiosResponseInterceptor = () => {
 
                     await AsyncStorage.setItem("SOMEBOX_ACCESS_TOKEN", access_token);
                     await AsyncStorage.setItem("SOMEBOX_REFRESH_TOKEN", refresh_token);
-                    
+
                     return axiosInstance(originalConfig);
-                } else {
-                    // navigate to login
-                    console.error('cannot get refresh token from storage');
                 }
             } catch (err) {
                 return Promise.reject(err);

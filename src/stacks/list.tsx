@@ -34,7 +34,6 @@ import { AppDispatch } from '../redux/store';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectErrorMovies, selectIsLoadedMovies, selectIsLoadingMovies, selectMovies } from '../redux/slices/moviesSlice';
 import { fetchMovies } from '../redux/thunks/movies';
-import { refreshAccessToken } from '../redux/thunks/login';
 
 const POSTER_WIDTH = 120;
 const POSTER_HEIGHT = 179;
@@ -50,12 +49,13 @@ function List(): JSX.Element {
   const errorMessage = useSelector(selectErrorMovies);
 
   // Prevent going back
-  useEffect(() => navigation.addListener('beforeRemove', (e) => {
-    e.preventDefault();
-  }), []);
-  useEffect(() => navigation.addListener('focus', (e) => {
-    dispatch(refreshAccessToken());
-  }), []);
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('beforeRemove', (e) => {
+      e.preventDefault();
+    });
+
+    return unsubscribe;
+  }, [navigation]);
 
   useEffect(() => {
     if (!isLoaded && isLoading) {
@@ -126,6 +126,10 @@ function List(): JSX.Element {
     [navigation],
   );
 
+  if (errorMessage != null) {
+    return <Debug data={errorMessage} />
+  }
+
   if (isLoading || !movies) {
     return <ActivityIndicator size="large" />;
   }
@@ -174,7 +178,6 @@ function List(): JSX.Element {
       <ScrollView style={{ marginBottom: 50 }}>
         <>
           {renderMovies(movies)}
-          <Debug name="errorMessage" data={errorMessage} />
         </>
       </ScrollView>
     </SafeAreaView>

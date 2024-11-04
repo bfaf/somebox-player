@@ -7,7 +7,7 @@ const Stack = createNativeStackNavigator();
 
 const SomeBoxPlayerStack = (): React.JSX.Element => {
     return (
-      <Stack.Navigator screenOptions={{
+      <Stack.Navigator id="LoginNav" screenOptions={{
         headerBackVisible: false,
         headerShown: false,
       }}>
