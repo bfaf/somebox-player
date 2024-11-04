@@ -80,8 +80,7 @@ const Login = (): JSX.Element => {
             }
         }
         if (loginErrorMessage == null && !isLoginPerformed) {
-            // autoLogin();
-            setShowForm(true);
+            autoLogin();
         }
     }, [loginErrorMessage, isLoginPerformed, login, setShowForm]);
 
