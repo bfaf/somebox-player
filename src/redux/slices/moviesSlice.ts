@@ -1,4 +1,4 @@
-import {createSlice} from '@reduxjs/toolkit';
+import {createSelector, createSlice} from '@reduxjs/toolkit';
 import {RootState} from '../store';
 import {AxiosError} from 'axios';
 import {MovieData} from '../../constants';
@@ -65,5 +65,10 @@ export const selectIsLoadingMovies = (state: RootState) =>
   state.movies.isLoading;
 export const selectIsLoadedMovies = (state: RootState) => state.movies.isLoaded;
 export const selectErrorMovies = (state: RootState) => state.movies.error;
+const selectMovieId = (_state: RootState, movieId: number) => movieId;
+export const selectMovieById = createSelector(
+  [selectMovies, selectMovieId],
+  (movies, movieId) => (movies || []).find(movie => movie.movieId === movieId),
+);
 
 export default moviesSlice.reducer;

@@ -1,5 +1,5 @@
 import React, {useState, useRef, useEffect} from 'react';
-import Video from 'react-native-video';
+import Video from 'react-native-media-console';
 import {
   SafeAreaView,
   StyleSheet,
@@ -15,9 +15,10 @@ import {useNavigation} from '@react-navigation/native';
 import Debug from '../components/debug';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useDispatch, useSelector} from 'react-redux';
-import {AppDispatch} from '../redux/store';
+import {AppDispatch, RootState} from '../redux/store';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {LoggedInStackParamList} from './loggedInStack';
+import {selectMovieById} from '../redux/slices/moviesSlice';
 
 type VideoPlayerProps = NativeStackScreenProps<
   LoggedInStackParamList,
@@ -33,34 +34,37 @@ const VideoPlayer = ({route}: VideoPlayerProps) => {
   const [videoError, setVideoError] = useState<any>(null);
   const [accessToken, setAccessToken] = useState<string>('');
   const [baseURL, setBaseURL] = useState<string>('');
+  const movieData = useSelector((state: RootState) =>
+    selectMovieById(state, videoId),
+  );
 
   let player: any = useRef();
-  const myTVEventHandler = (evt: HWEvent) => {
-    const type = evt.eventType;
-    if (type === 'pause') {
-      setIsPaused(true);
-    } else if (type === 'play') {
-      setIsPaused(false);
-    } else if (type === 'fastForward') {
-      ToastAndroid.showWithGravity(
-        '+10',
-        ToastAndroid.SHORT,
-        ToastAndroid.CENTER,
-      );
-      player.current.seek(currentTimeInSeconds + 10);
-    } else if (type === 'rewind') {
-      ToastAndroid.showWithGravity(
-        '-10',
-        ToastAndroid.SHORT,
-        ToastAndroid.CENTER,
-      );
-      player.current.seek(currentTimeInSeconds - 10);
-    }
-  };
+  // const myTVEventHandler = (evt: HWEvent) => {
+  //   const type = evt.eventType;
+  //   if (type === 'pause') {
+  //     setIsPaused(true);
+  //   } else if (type === 'play') {
+  //     setIsPaused(false);
+  //   } else if (type === 'fastForward') {
+  //     ToastAndroid.showWithGravity(
+  //       '+10',
+  //       ToastAndroid.SHORT,
+  //       ToastAndroid.CENTER,
+  //     );
+  //     player.current.seek(currentTimeInSeconds + 10);
+  //   } else if (type === 'rewind') {
+  //     ToastAndroid.showWithGravity(
+  //       '-10',
+  //       ToastAndroid.SHORT,
+  //       ToastAndroid.CENTER,
+  //     );
+  //     player.current.seek(currentTimeInSeconds - 10);
+  //   }
+  // };
 
-  if (Platform.isTV) {
-    useTVEventHandler(myTVEventHandler);
-  }
+  // if (Platform.isTV) {
+  //   useTVEventHandler(myTVEventHandler);
+  // }
 
   const onVideoError = (error: any) => {
     setVideoError(
@@ -113,11 +117,17 @@ const VideoPlayer = ({route}: VideoPlayerProps) => {
           resizeMode="cover"
           paused={isPaused}
           onError={onVideoError}
-          ref={player}
+          videoRef={player}
           onProgress={onProgress}
           repeat={false}
           onEnd={() => navigation.goBack()}
           style={styles.backgroundVideo}
+          navigator={navigation}
+          showTimeRemaining={true}
+          showHours={true}
+          disableVolume={true}
+          controlTimeoutDelay={5 * 1000}
+          title={movieData?.name}
         />
         {/* <Text style={{ position: 'absolute', top: 300, left: 300, zIndex: 10000, fontSize: 20, color: 'white', backgroundColor: 'red'}}>Buffering: {buffering}</Text>*/}
       </View>
