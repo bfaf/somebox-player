@@ -11,6 +11,7 @@
     "start:nc": "react-native start --reset-cache",
     "build": "cd android && gradlew build",
     "test": "jest",
+    "format": "prettier ./src --write",
     "typecheck": "tsc --noEmit",
     "clean": "cd android && gradlew clean",
     "assemble:debug": "cd android && gradlew assembleDebug",

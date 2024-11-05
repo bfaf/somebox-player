@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import Video from 'react-native-video';
 import {
   SafeAreaView,
@@ -9,20 +9,23 @@ import {
   HWEvent,
   Platform,
   ToastAndroid,
-  ActivityIndicator
+  ActivityIndicator,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 import Debug from '../components/debug';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch } from '../redux/store';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { LoggedInStackParamList } from './loggedInStack';
+import {useDispatch, useSelector} from 'react-redux';
+import {AppDispatch} from '../redux/store';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {LoggedInStackParamList} from './loggedInStack';
 
-type VideoPlayerProps = NativeStackScreenProps<LoggedInStackParamList, 'Player'>;
+type VideoPlayerProps = NativeStackScreenProps<
+  LoggedInStackParamList,
+  'Player'
+>;
 
-const VideoPlayer = ({ route }: VideoPlayerProps) => {
-  const { videoId } = route?.params;
+const VideoPlayer = ({route}: VideoPlayerProps) => {
+  const {videoId} = route?.params;
   const dispatch: AppDispatch = useDispatch();
   const navigation = useNavigation();
   const [isPaused, setIsPaused] = useState<boolean>(false);
@@ -39,10 +42,18 @@ const VideoPlayer = ({ route }: VideoPlayerProps) => {
     } else if (type === 'play') {
       setIsPaused(false);
     } else if (type === 'fastForward') {
-      ToastAndroid.showWithGravity('+10', ToastAndroid.SHORT, ToastAndroid.CENTER);
+      ToastAndroid.showWithGravity(
+        '+10',
+        ToastAndroid.SHORT,
+        ToastAndroid.CENTER,
+      );
       player.current.seek(currentTimeInSeconds + 10);
     } else if (type === 'rewind') {
-      ToastAndroid.showWithGravity('-10', ToastAndroid.SHORT, ToastAndroid.CENTER);
+      ToastAndroid.showWithGravity(
+        '-10',
+        ToastAndroid.SHORT,
+        ToastAndroid.CENTER,
+      );
       player.current.seek(currentTimeInSeconds - 10);
     }
   };
@@ -52,8 +63,10 @@ const VideoPlayer = ({ route }: VideoPlayerProps) => {
   }
 
   const onVideoError = (error: any) => {
-    setVideoError('Error occured during playback. Please press OK and try to play the movie again.');
-  }
+    setVideoError(
+      'Error occured during playback. Please press OK and try to play the movie again.',
+    );
+  };
 
   const onProgress = (data: any): void => {
     setCurrentTimeInSeconds(data.currentTime);
@@ -61,24 +74,26 @@ const VideoPlayer = ({ route }: VideoPlayerProps) => {
 
   useEffect(() => {
     const getAccessToken = async () => {
-      const accessToken = await AsyncStorage.getItem("SOMEBOX_ACCESS_TOKEN");
-      const baseURL = await AsyncStorage.getItem("SOMEBOX_BASE_URL_ADDRESS");
+      const accessToken = await AsyncStorage.getItem('SOMEBOX_ACCESS_TOKEN');
+      const baseURL = await AsyncStorage.getItem('SOMEBOX_BASE_URL_ADDRESS');
       if (accessToken != null && baseURL != null) {
         setAccessToken(accessToken);
         setBaseURL(baseURL);
       } else {
-        setVideoError('Cannot read access token from storage. Please restart the app');
+        setVideoError(
+          'Cannot read access token from storage. Please restart the app',
+        );
       }
-    }
+    };
     getAccessToken();
 
     return () => {
       setAccessToken('');
-    }
+    };
   }, [dispatch, setAccessToken]);
 
   if (videoError != null) {
-    return <Debug data={videoError} />
+    return <Debug data={videoError} />;
   }
 
   if (accessToken == null || baseURL == null) {
@@ -88,11 +103,12 @@ const VideoPlayer = ({ route }: VideoPlayerProps) => {
   return (
     <SafeAreaView>
       <View style={styles.backgroundVideo}>
-        <Video source={{
-          uri: `${baseURL}/play/${videoId}`,
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          }
+        <Video
+          source={{
+            uri: `${baseURL}/play/${videoId}`,
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
           }}
           resizeMode="cover"
           paused={isPaused}
@@ -101,7 +117,8 @@ const VideoPlayer = ({ route }: VideoPlayerProps) => {
           onProgress={onProgress}
           repeat={false}
           onEnd={() => navigation.goBack()}
-          style={styles.backgroundVideo} />
+          style={styles.backgroundVideo}
+        />
         {/* <Text style={{ position: 'absolute', top: 300, left: 300, zIndex: 10000, fontSize: 20, color: 'white', backgroundColor: 'red'}}>Buffering: {buffering}</Text>*/}
       </View>
       {/* <View>
@@ -115,7 +132,7 @@ const VideoPlayer = ({ route }: VideoPlayerProps) => {
 const styles = StyleSheet.create({
   backgroundVideo: {
     height: Dimensions.get('window').height,
-    width: Dimensions.get('window').width
+    width: Dimensions.get('window').width,
   },
 });
 
