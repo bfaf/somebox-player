@@ -15,7 +15,7 @@ export const useLoginTimeout = () => {
 
     useEffect(() => {
         const verifyTimeout = async () => {
-            const loginTimestamp = await AsyncStorage.getItem("SOMEBOX_LOGIN_TIMESTAMP");
+            const loginTimestamp = await AsyncStorage.getItem("SOMEBOX_LOGIN_TIMESTAMP") || '0';
             const loginTime = Number.parseInt(loginTimestamp);
             if ((Date.now() - loginTime) < (refreshTokenExpiresIn * 1000)) {
                 dispatch(refreshAccessToken());
@@ -24,10 +24,12 @@ export const useLoginTimeout = () => {
                 const password = await AsyncStorage.getItem("SOMEBOX_PASSWORD");
                 if (username != null && password != null) {
                     await dispatch(loginUser({ username, password }));
+                } else {
+                    throw new Error('Cannot read username or password from storage. Please restart the app.');
                 }
             }
         }
-        const appStateSubscription = AppState.addEventListener('change', async (nextAppState) => {
+        const appStateSubscription = AppState.addEventListener('change', async (nextAppState ) => {
             if (
                 appState.current.match(/inactive|background/) &&
                 nextAppState === 'active'

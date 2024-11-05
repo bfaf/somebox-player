@@ -16,16 +16,20 @@ import Debug from '../components/debug';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../redux/store';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { LoggedInStackParamList } from './loggedInStack';
 
-const VideoPlayer = ({ route }) => {
+type VideoPlayerProps = NativeStackScreenProps<LoggedInStackParamList, 'Player'>;
+
+const VideoPlayer = ({ route }: VideoPlayerProps) => {
   const { videoId } = route?.params;
   const dispatch: AppDispatch = useDispatch();
   const navigation = useNavigation();
   const [isPaused, setIsPaused] = useState<boolean>(false);
   const [currentTimeInSeconds, setCurrentTimeInSeconds] = useState<number>(0);
   const [videoError, setVideoError] = useState<any>(null);
-  const [accessToken, setAccessToken] = useState<string>(undefined);
-  const [baseURL, setBaseURL] = useState<string>(undefined);
+  const [accessToken, setAccessToken] = useState<string>('');
+  const [baseURL, setBaseURL] = useState<string>('');
 
   let player: any = useRef();
   const myTVEventHandler = (evt: HWEvent) => {
@@ -59,13 +63,17 @@ const VideoPlayer = ({ route }) => {
     const getAccessToken = async () => {
       const accessToken = await AsyncStorage.getItem("SOMEBOX_ACCESS_TOKEN");
       const baseURL = await AsyncStorage.getItem("SOMEBOX_BASE_URL_ADDRESS");
-      setAccessToken(accessToken);
-      setBaseURL(baseURL);
+      if (accessToken != null && baseURL != null) {
+        setAccessToken(accessToken);
+        setBaseURL(baseURL);
+      } else {
+        setVideoError('Cannot read access token from storage. Please restart the app');
+      }
     }
     getAccessToken();
 
     return () => {
-      setAccessToken(undefined);
+      setAccessToken('');
     }
   }, [dispatch, setAccessToken]);
 

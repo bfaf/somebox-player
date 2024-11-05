@@ -34,6 +34,7 @@ import { AppDispatch } from '../redux/store';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectErrorMovies, selectIsLoadedMovies, selectIsLoadingMovies, selectMovies } from '../redux/slices/moviesSlice';
 import { fetchMovies } from '../redux/thunks/movies';
+import { LoggedInStackNavigationProp } from './loggedInStack';
 
 const POSTER_WIDTH = 120;
 const POSTER_HEIGHT = 179;
@@ -41,7 +42,7 @@ const POSTER_PADDING = 30;
 
 function List(): JSX.Element {
   const dispatch: AppDispatch = useDispatch();
-  const navigation = useNavigation();
+  const navigation = useNavigation<LoggedInStackNavigationProp>();
   const [eventName, setEventName] = useState<string>('');
   const movies = useSelector(selectMovies);
   const isLoaded = useSelector(selectIsLoadedMovies);

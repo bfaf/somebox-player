@@ -7,7 +7,7 @@ interface SettingsState {
     baseUrl: string,
     isLoading: boolean,
     isUpdated: boolean,
-    error: unknown,
+    error: string | undefined,
 };
 
 const initialState: SettingsState = {
@@ -31,7 +31,7 @@ export const settingsSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-        .addCase(initialConfig.fulfilled, (state, action) => {
+        .addCase(initialConfig.fulfilled, (state: SettingsState, action) => {
             const initialConfig = action.payload;
             return {
                 ...state,
@@ -41,14 +41,14 @@ export const settingsSlice = createSlice({
                 error: undefined,
             };
         })
-        .addCase(initialConfig.rejected, (state, action) => {
+        .addCase(initialConfig.rejected, (state: SettingsState, action: any) => {
             return {
                 ...state,
                 isLoading: false,
                 error: action.payload,
             }
         })
-        .addCase(updateIpAddress.fulfilled, (state, action) => {
+        .addCase(updateIpAddress.fulfilled, (state: SettingsState, action) => {
             const newConfig = action.payload;
             return {
                 ...state,
@@ -57,14 +57,14 @@ export const settingsSlice = createSlice({
                 isUpdated: true,
             }
         })
-        .addCase(updateIpAddress.pending, (state, action) => {
+        .addCase(updateIpAddress.pending, (state: SettingsState) => {
             return {
                 ...state,
                 isUpdated: false,
                 error: undefined
             }
         })
-        .addCase(updateIpAddress.rejected, (state, action) => {
+        .addCase(updateIpAddress.rejected, (state: SettingsState, action: any) => {
             return {
                 ...state,
                 isUpdated: false,

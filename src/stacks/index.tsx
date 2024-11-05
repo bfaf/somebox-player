@@ -1,11 +1,20 @@
 import React from 'react';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createNativeStackNavigator, NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Login from './login';
 import LoggedInStack from './loggedInStack';
 import InitSettings from './initSettings';
 import LoginSettings from './loginSettings';
 
-const Stack = createNativeStackNavigator();
+export type RootStackParamList = {
+  InitSettings: undefined;
+  Login: undefined;
+  LoggedInStack: undefined;
+  LoginSettings: undefined;
+};
+
+export type LoginStackNavigationProp = NativeStackNavigationProp<RootStackParamList>;
+
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const SomeBoxPlayerStack = (): React.JSX.Element => {
     return (

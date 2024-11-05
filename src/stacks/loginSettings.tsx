@@ -90,8 +90,6 @@ const LoginSettings = () => {
                     <Text>Server IP address:</Text>
                     <TextInput
                         style={styles.usernameInput}
-                        // contentStyle={styles.applyButtonContent}
-                        mode="outlined"
                         inputMode="text"
                         value={serverIp}
                         onChangeText={setServerIp}

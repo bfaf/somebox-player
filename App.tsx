@@ -16,11 +16,11 @@ createAxiosResponseInterceptor();
 
 function App(): React.JSX.Element {
   return (
-    <NavigationContainer>
-      <StoreProvider store={setupStore()}>
+    <StoreProvider store={setupStore()}>
+      <NavigationContainer>
         <SomeBoxPlayerStack />
-      </StoreProvider>
-    </NavigationContainer>
+      </NavigationContainer>
+    </StoreProvider>
   );
 }
 

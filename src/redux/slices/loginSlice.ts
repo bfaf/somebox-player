@@ -10,7 +10,7 @@ interface LoginState {
     isLoginPerformed: boolean,
     refreshTokenExpiresIn: number;
     retryAttempts: number;
-    error: unknown,
+    error: string | undefined,
 }
 
 // Define the initial state using that type
@@ -76,7 +76,8 @@ export const loginSlice = createSlice({
                 return {
                     ...state,
                     isAccessTokenRefreshed: true,
-                    refreshTokenExpiresIn: refresh_expires_in
+                    refreshTokenExpiresIn: refresh_expires_in,
+                    retryAttempts: 0,
                 }
             })
             .addCase(refreshAccessToken.pending, (state, action) => {
@@ -87,11 +88,21 @@ export const loginSlice = createSlice({
                 }
             })
             .addCase(refreshAccessToken.rejected, (state, action) => {
+                if (state.retryAttempts >= MAX_RETRY_ATTEMPTS) {
+                    return {
+                        ...state,
+                        loggedIn: false,
+                        error: 'Unable to refresh access token. Please restart the application',
+                        isLoading: false,
+                        isLoginPerformed: true,
+                    }
+                }
                 const error = action.payload && Object.keys(action.payload).length > 0 ? (action.payload as AxiosError) : { message: undefined };
                 return {
                     ...state,
                     isAccessTokenRefreshed: false,
-                    error: error.message
+                    error: error.message,
+                    retryAttempts: state.retryAttempts + 1,
                 }
             })
     }

@@ -6,6 +6,7 @@ import { initialConfig } from '../redux/thunks/settings';
 import { selectIsSettingsLoading, selectSettingsError } from '../redux/slices/settingsSlice';
 import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView, ActivityIndicator, View, Text, StyleSheet } from 'react-native';
+import { LoginStackNavigationProp } from '.';
 
 const styles = StyleSheet.create({
     content: {
@@ -33,7 +34,7 @@ const styles = StyleSheet.create({
 
 const InitSettings = () => {
     const dispatch: AppDispatch = useDispatch();
-    const navigation = useNavigation();
+    const navigation = useNavigation<LoginStackNavigationProp>();
     const isSettingsLoading = useSelector(selectIsSettingsLoading);
     const settingsError = useSelector(selectSettingsError);
 

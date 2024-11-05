@@ -1,14 +1,21 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axiosInstance from "./api";
+import { DEFAULT_BASE_URL } from "../constants";
 
 export const createAxiosResponseInterceptor = () => {
     axiosInstance.interceptors.request.use(
         async (config) => {
-            const accessToken = await AsyncStorage.getItem("SOMEBOX_ACCESS_TOKEN");
-            if (accessToken != null) {
-                config.headers['Authorization'] = `Bearer ${accessToken}`;
+            const url = config?.url || '';
+            const isRefreshTokenUrl = url.indexOf('refreshToken') > 0;
+            const isLoginUrl = url.indexOf('login') > 0;
+            if (!isRefreshTokenUrl && !isLoginUrl) {
+                const accessToken = await AsyncStorage.getItem("SOMEBOX_ACCESS_TOKEN");
+                if (accessToken != null) {
+                    config.headers['Authorization'] = `Bearer ${accessToken}`;
+                }
             }
-            config.baseURL = await AsyncStorage.getItem("SOMEBOX_BASE_URL_ADDRESS");
+            
+            config.baseURL = await AsyncStorage.getItem("SOMEBOX_BASE_URL_ADDRESS") || DEFAULT_BASE_URL;
 
             return config;
         },

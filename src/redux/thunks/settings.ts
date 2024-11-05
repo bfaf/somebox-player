@@ -1,16 +1,17 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createAsyncThunk } from "@reduxjs/toolkit";
+import { DEFAULT_BASE_URL, DEFAULT_SERVER_IP } from "../../constants";
 
 type InitialConfig = {
-    serverIp?: string;
-    baseUrl?: string;
+    serverIp: string;
+    baseUrl: string;
 }
 
 export const initialConfig = createAsyncThunk(
     'settings/initialConfig',
     async (_, { fulfillWithValue, rejectWithValue }) => {
         try {
-            let initialConfig: InitialConfig = {};
+            let initialConfig: InitialConfig;
             const isInitialConfigPassed = await AsyncStorage.getItem("SOMEBOX_INITIAL_CONFIG_PASSED");
             if (isInitialConfigPassed == null) {
                 initialConfig = {
@@ -22,8 +23,8 @@ export const initialConfig = createAsyncThunk(
                 await AsyncStorage.setItem("SOMEBOX_INITIAL_CONFIG_PASSED", 'true');
             } else {
                 initialConfig = {
-                    serverIp: await AsyncStorage.getItem("SOMEBOX_SERVER_ADDRESS"),
-                    baseUrl: await AsyncStorage.getItem("SOMEBOX_BASE_URL_ADDRESS"),
+                    serverIp: await AsyncStorage.getItem("SOMEBOX_SERVER_ADDRESS") || DEFAULT_SERVER_IP,
+                    baseUrl: await AsyncStorage.getItem("SOMEBOX_BASE_URL_ADDRESS") || DEFAULT_BASE_URL,
                 };
             }
 

@@ -10,6 +10,7 @@ import { IconButton } from '@react-native-material/core';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faGear } from '@fortawesome/free-solid-svg-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { LoginStackNavigationProp } from '.';
 
 const styles = StyleSheet.create({
     container: {
@@ -56,9 +57,9 @@ const styles = StyleSheet.create({
 
 const Login = (): JSX.Element => {
     const dispatch: AppDispatch = useDispatch();
-    const navigation = useNavigation();
-    const [username, setUsername] = useState<string>(undefined);
-    const [password, setPassword] = useState<string>(undefined);
+    const navigation = useNavigation<LoginStackNavigationProp>();
+    const [username, setUsername] = useState<string>('');
+    const [password, setPassword] = useState<string>('');
     const [showForm, setShowForm] = useState<boolean>(false);
     const isLoggedIn = useSelector(selectLoggedIn);
     const loginErrorMessage = useSelector(selectLoginError);
@@ -106,12 +107,10 @@ const Login = (): JSX.Element => {
                 <View style={styles.inputWithButton}>
                     <TextInput
                         style={styles.usernameInput}
-                        // contentStyle={styles.applyButtonContent}
                         placeholder="Username"
-                        mode="outlined"
                         inputMode="text"
                         value={username}
-                        onChangeText={(text) => setUsername(text)}
+                        onChangeText={(text: string) => setUsername(text)}
                         keyboardType="default"
                         autoFocus={true}
                     />
@@ -128,12 +127,10 @@ const Login = (): JSX.Element => {
                 <View>
                     <TextInput
                         style={styles.input}
-                        // contentStyle={styles.applyButtonContent}
                         placeholder="Password"
-                        mode="outlined"
                         inputMode="text"
                         value={password}
-                        onChangeText={(text) => setPassword(text)}
+                        onChangeText={(text: string) => setPassword(text)}
                         keyboardType="default"
                         secureTextEntry={true}
                     />

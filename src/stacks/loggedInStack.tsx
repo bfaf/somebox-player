@@ -1,12 +1,19 @@
 import React from 'react';
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { createNativeStackNavigator, NativeStackNavigationProp } from "@react-navigation/native-stack";
 import List from "./list";
 import VideoPlayer from "./video-player";
 import { useLoginTimeout } from '../hooks/useLoginTimeout';
 
-const Stack = createNativeStackNavigator();
+export type LoggedInStackParamList = {
+    List: undefined;
+    Player: { videoId: number };
+};
 
-const LoginRefresh = (props) => {
+export type LoggedInStackNavigationProp = NativeStackNavigationProp<LoggedInStackParamList>;
+
+const Stack = createNativeStackNavigator<LoggedInStackParamList>();
+
+const LoginRefresh = () => {
     useLoginTimeout();
     return (<></>);
 };
@@ -16,9 +23,9 @@ const LoggedInStack = () => {
         <Stack.Navigator id="AppNav" initialRouteName="List" screenOptions={{
             headerBackVisible: false,
             headerShown: false,
-            headerTitle: (props) => <LoginRefresh {...props}/>
+            headerTitle: () => <LoginRefresh />
         }}>
-            <Stack.Screen name="List" component={List}  />
+            <Stack.Screen name="List" component={List} />
             <Stack.Screen name="Player" component={VideoPlayer} />
         </Stack.Navigator>
     );
