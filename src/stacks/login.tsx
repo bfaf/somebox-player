@@ -19,12 +19,15 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Image,
+  HWEvent,
+  Platform,
+  useTVEventHandler,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {LoginStackNavigationProp} from '.';
 import {IconButton} from '@react-native-material/core';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {faGear} from '@fortawesome/free-solid-svg-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {LoginStackNavigationProp} from '.';
 
 const styles = StyleSheet.create({
   container: {
@@ -75,10 +78,48 @@ const Login = (): JSX.Element => {
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [showForm, setShowForm] = useState<boolean>(false);
+  const [currentlySelectedElement, setCurrentlySelectedElement] =
+    useState<string>('username');
   const isLoggedIn = useSelector(selectLoggedIn);
   const loginErrorMessage = useSelector(selectLoginError);
   const isLoading = useSelector(selectIsLoginLoading);
   const isLoginPerformed = useSelector(selectIsLoginPerformed);
+  const usernameRef = React.createRef<TextInput>();
+  const passwordRef = React.createRef<TextInput>();
+
+  const myTVEventHandler = (evt: HWEvent) => {
+    const type = evt.eventType;
+    if (type === 'down') {
+      if (
+        currentlySelectedElement === 'username' ||
+        currentlySelectedElement === 'settings'
+      ) {
+        passwordRef.current?.focus();
+      }
+    } else if (type === 'up') {
+      if (currentlySelectedElement === 'password') {
+        usernameRef.current?.focus();
+      } else if (currentlySelectedElement === 'login') {
+        passwordRef.current?.focus();
+      }
+    } else if (type === 'left') {
+      if (currentlySelectedElement === 'settings') {
+        usernameRef.current?.focus();
+      }
+    }
+  };
+
+  if (Platform.isTV) {
+    useTVEventHandler(myTVEventHandler);
+  }
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('beforeRemove', e => {
+      e.preventDefault();
+    });
+
+    return unsubscribe;
+  }, [navigation]);
 
   const login = async (username: string, password: string) => {
     await dispatch(loginUser({username, password}));
@@ -127,13 +168,16 @@ const Login = (): JSX.Element => {
             inputMode="text"
             value={username}
             onChangeText={(text: string) => setUsername(text)}
-            keyboardType="default"
             autoFocus={true}
+            keyboardType="default"
+            onFocus={() => setCurrentlySelectedElement('username')}
+            ref={usernameRef}
           />
           <IconButton
             icon={props => (
               <FontAwesomeIcon icon={faGear} style={{color: 'black'}} />
             )}
+            onFocus={() => setCurrentlySelectedElement('settings')}
             onPress={() => navigation.navigate('LoginSettings')}
           />
         </View>
@@ -144,14 +188,17 @@ const Login = (): JSX.Element => {
             inputMode="text"
             value={password}
             onChangeText={(text: string) => setPassword(text)}
-            keyboardType="default"
             secureTextEntry={true}
+            keyboardType="default"
+            onFocus={() => setCurrentlySelectedElement('password')}
+            ref={passwordRef}
           />
         </View>
         <View>
           <TouchableOpacity
             key="login"
             style={styles.button}
+            onFocus={() => setCurrentlySelectedElement('login')}
             onPress={() => login(username, password)}>
             <Text style={styles.buttonText}>Login</Text>
           </TouchableOpacity>

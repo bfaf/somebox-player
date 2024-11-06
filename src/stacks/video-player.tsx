@@ -19,6 +19,7 @@ import {AppDispatch, RootState} from '../redux/store';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {LoggedInStackParamList} from './loggedInStack';
 import {selectMovieById} from '../redux/slices/moviesSlice';
+import {OnProgressData, OnVideoErrorData} from 'react-native-video';
 
 type VideoPlayerProps = NativeStackScreenProps<
   LoggedInStackParamList,
@@ -39,40 +40,30 @@ const VideoPlayer = ({route}: VideoPlayerProps) => {
   );
 
   let player: any = useRef();
-  // const myTVEventHandler = (evt: HWEvent) => {
-  //   const type = evt.eventType;
-  //   if (type === 'pause') {
-  //     setIsPaused(true);
-  //   } else if (type === 'play') {
-  //     setIsPaused(false);
-  //   } else if (type === 'fastForward') {
-  //     ToastAndroid.showWithGravity(
-  //       '+10',
-  //       ToastAndroid.SHORT,
-  //       ToastAndroid.CENTER,
-  //     );
-  //     player.current.seek(currentTimeInSeconds + 10);
-  //   } else if (type === 'rewind') {
-  //     ToastAndroid.showWithGravity(
-  //       '-10',
-  //       ToastAndroid.SHORT,
-  //       ToastAndroid.CENTER,
-  //     );
-  //     player.current.seek(currentTimeInSeconds - 10);
-  //   }
-  // };
+  const myTVEventHandler = (evt: HWEvent) => {
+    const type = evt.eventType;
+    if (type === 'pause') {
+      setIsPaused(true);
+    } else if (type === 'play') {
+      setIsPaused(false);
+    } else if (type === 'fastForward') {
+      player.current.seek(currentTimeInSeconds + 15);
+    } else if (type === 'rewind') {
+      player.current.seek(currentTimeInSeconds - 15);
+    }
+  };
 
-  // if (Platform.isTV) {
-  //   useTVEventHandler(myTVEventHandler);
-  // }
+  if (Platform.isTV) {
+    useTVEventHandler(myTVEventHandler);
+  }
 
-  const onVideoError = (error: any) => {
+  const onVideoError = (error: OnVideoErrorData) => {
     setVideoError(
-      'Error occured during playback. Please press OK and try to play the movie again.',
+      `Error occured during playback. Please press OK and try to play the movie again. Error:\n ${error.error.errorString}`,
     );
   };
 
-  const onProgress = (data: any): void => {
+  const onProgress = (data: OnProgressData): void => {
     setCurrentTimeInSeconds(data.currentTime);
   };
 
@@ -126,15 +117,11 @@ const VideoPlayer = ({route}: VideoPlayerProps) => {
           showTimeRemaining={true}
           showHours={true}
           disableVolume={true}
+          disableFullscreen={true}
           controlTimeoutDelay={5 * 1000}
           title={movieData?.name}
         />
-        {/* <Text style={{ position: 'absolute', top: 300, left: 300, zIndex: 10000, fontSize: 20, color: 'white', backgroundColor: 'red'}}>Buffering: {buffering}</Text>*/}
       </View>
-      {/* <View>
-        <TouchableOpacity><Text>Some item to navigate 1</Text></TouchableOpacity>
-        <TouchableOpacity><Text>Some item to navigate 2</Text></TouchableOpacity>
-      </View> */}
     </SafeAreaView>
   );
 };
