@@ -4,7 +4,7 @@ import {
   NativeStackNavigationProp,
 } from '@react-navigation/native-stack';
 import List from './list';
-import VideoPlayer from './video-player';
+import VideoPlayer from './video-player.android.tv';
 import {useLoginTimeout} from '../hooks/useLoginTimeout';
 
 export type LoggedInStackParamList = {
