@@ -1,7 +1,7 @@
-import { View, Text } from "react-native";
-import { useRouteError } from "react-router-dom";
+import {View, Text} from 'react-native';
+import {useRouteError} from 'react-router-dom';
 
- const ErrorPage = (): React.JSX.Element => {
+const ErrorPage = (): React.JSX.Element => {
   const error = useRouteError();
   console.error(error);
 
@@ -14,6 +14,6 @@ import { useRouteError } from "react-router-dom";
       </Text>
     </View>
   );
-}
+};
 
 export default ErrorPage;

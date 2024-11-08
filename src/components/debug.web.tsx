@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react';
 import {Alert} from 'react-native';
-import { useNavigate } from "react-router-dom";
+import {useNavigate} from 'react-router-dom';
 
 type AlertProps = {
   data: unknown;
@@ -16,9 +16,7 @@ const Debug = ({data}: AlertProps) => {
 
   useEffect(() => {
     if (newData != null) {
-      window.alert(
-        `Something went wrong\n${newData}`
-      );
+      window.alert(`Something went wrong\n${newData}`);
     }
   }, [newData]);
 

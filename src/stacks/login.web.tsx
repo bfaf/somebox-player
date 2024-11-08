@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import { useNavigate } from "react-router-dom";
+import {useNavigate} from 'react-router-dom';
 
 import {useDispatch, useSelector} from 'react-redux';
 import {AppDispatch} from '../redux/store';
@@ -110,7 +110,7 @@ const Login = (): JSX.Element => {
   return (
     <SafeAreaView>
       <View>
-        <Image style={styles.logo} source={{ uri: '../images/logo.png'}} />
+        <Image style={styles.logo} source={{uri: '../images/logo.png'}} />
       </View>
       <View style={styles.container}>
         {loginErrorMessage != null && (

@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react';
 
 import {useDispatch, useSelector} from 'react-redux';
-import { useNavigate } from "react-router-dom";
+import {useNavigate} from 'react-router-dom';
 import {AppDispatch} from '../redux/store';
 import {initialConfig} from '../redux/thunks/settings';
 import {
@@ -77,7 +77,7 @@ const InitSettings = () => {
     return <ActivityIndicator size="large" />;
   }
 
-  return (<></>);
+  return <></>;
 };
 
 export default InitSettings;

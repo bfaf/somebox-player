@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {createAsyncThunk} from '@reduxjs/toolkit';
 import {DEFAULT_BASE_URL, DEFAULT_SERVER_IP} from '../../constants';
-import { Platform } from 'react-native';
+import {Platform} from 'react-native';
 
 type InitialConfig = {
   serverIp: string;
@@ -22,14 +22,17 @@ export const initialConfig = createAsyncThunk(
             serverIp: '192.168.1.9',
             baseUrl: `http://192.168.1.9:8080/api/v1`,
           };
-        } else { // assume web
+        } else {
+          // assume web
           const isDevEnv = process.env.NODE_ENV === 'development';
           initialConfig = {
             serverIp: 'localhost',
-            baseUrl: isDevEnv ? `http://localhost:8080/api/v1` : `http://localhost/api/v1`,
+            baseUrl: isDevEnv
+              ? `http://localhost:8080/api/v1`
+              : `http://localhost/api/v1`,
           };
         }
-        
+
         await AsyncStorage.setItem(
           'SOMEBOX_SERVER_ADDRESS',
           initialConfig.serverIp,

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from "react-router-dom";
+import React, {useState, useEffect} from 'react';
+import {useNavigate} from 'react-router-dom';
 import {
   SafeAreaView,
   StyleSheet,
@@ -9,15 +9,15 @@ import {
 } from 'react-native';
 import Debug from '../components/debug';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../redux/store';
-import { selectMovieById } from '../redux/slices/moviesSlice';
-import { useLoaderData } from 'react-router-dom';
+import {useDispatch, useSelector} from 'react-redux';
+import {AppDispatch, RootState} from '../redux/store';
+import {selectMovieById} from '../redux/slices/moviesSlice';
+import {useLoaderData} from 'react-router-dom';
 import ReactPlayer from 'react-player';
 
-export const videoLoader = (({ params }: { params: any }) => {
+export const videoLoader = ({params}: {params: any}) => {
   return params.videoId;
-});
+};
 
 const VideoPlayer = () => {
   const videoId = useLoaderData();

@@ -12,7 +12,7 @@ import {
   faEllipsisVertical,
   faMagnifyingGlass,
 } from '@fortawesome/free-solid-svg-icons';
-import { Outlet, Link } from "react-router-dom";
+import {Outlet, Link} from 'react-router-dom';
 
 import {
   SafeAreaView,
@@ -55,60 +55,55 @@ function List(): JSX.Element {
     }
   }, [isLoaded, isLoading]);
 
-  const renderMovies = useCallback(
-    (moviesData: MovieData[]) => {
-      const rows = [];
-      const moviesPerRow = Math.floor(
-        Dimensions.get('window').width / (POSTER_WIDTH + POSTER_PADDING),
-      );
+  const renderMovies = useCallback((moviesData: MovieData[]) => {
+    const rows = [];
+    const moviesPerRow = Math.floor(
+      Dimensions.get('window').width / (POSTER_WIDTH + POSTER_PADDING),
+    );
 
-      for (let i = 0; i < moviesData.length; i += moviesPerRow) {
-        rows.push(moviesData.slice(i, i + moviesPerRow));
-      }
+    for (let i = 0; i < moviesData.length; i += moviesPerRow) {
+      rows.push(moviesData.slice(i, i + moviesPerRow));
+    }
 
-      return (
-        <VStack
-          style={{
-            marginTop: 0,
-            marginLeft: 'auto',
-            marginRight: 'auto',
-            width: '83%',
-          }}>
-          {rows.map((row, idx: number) => (
-            <HStack m={POSTER_PADDING} spacing={8} key={idx}>
-              {row.map((r: MovieData, innerIdx: number) => (
-                <View
-                  key={r.filename}
-                  style={{display: 'flex', flexDirection: 'row'}}>
-                  <Link
-                    key={r.filename}
-                    to={`/video/${r.movieId}`}>
-                    <Image
-                      source={{
-                        uri: `data:image/png;base64,${r.moviesMetadataEntity.poster}`,
-                      }}
-                      resizeMode="cover"
-                      style={{width: POSTER_WIDTH, height: POSTER_HEIGHT}}
-                    />
-                    <Text
-                      numberOfLines={2}
-                      style={{
-                        fontSize: 14,
-                        width: POSTER_WIDTH,
-                        color: 'grey',
-                      }}>
-                      {r.name}
-                    </Text>
-                  </Link>
-                </View>
-              ))}
-            </HStack>
-          ))}
-        </VStack>
-      );
-    },
-    [],
-  );
+    return (
+      <VStack
+        style={{
+          marginTop: 0,
+          marginLeft: 'auto',
+          marginRight: 'auto',
+          width: '83%',
+        }}>
+        {rows.map((row, idx: number) => (
+          <HStack m={POSTER_PADDING} spacing={8} key={idx}>
+            {row.map((r: MovieData, innerIdx: number) => (
+              <View
+                key={r.filename}
+                style={{display: 'flex', flexDirection: 'row'}}>
+                <Link key={r.filename} to={`/video/${r.movieId}`}>
+                  <Image
+                    source={{
+                      uri: `data:image/png;base64,${r.moviesMetadataEntity.poster}`,
+                    }}
+                    resizeMode="cover"
+                    style={{width: POSTER_WIDTH, height: POSTER_HEIGHT}}
+                  />
+                  <Text
+                    numberOfLines={2}
+                    style={{
+                      fontSize: 14,
+                      width: POSTER_WIDTH,
+                      color: 'grey',
+                    }}>
+                    {r.name}
+                  </Text>
+                </Link>
+              </View>
+            ))}
+          </HStack>
+        ))}
+      </VStack>
+    );
+  }, []);
 
   if (errorMessage != null) {
     return <Debug data={errorMessage} />;
