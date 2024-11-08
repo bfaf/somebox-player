@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axiosInstance from './api';
-import {DEFAULT_BASE_URL} from '../constants';
+import { DEFAULT_BASE_URL } from '../constants';
+import { Platform } from 'react-native';
 
 export const createAxiosResponseInterceptor = () => {
   axiosInstance.interceptors.request.use(
@@ -15,9 +16,13 @@ export const createAxiosResponseInterceptor = () => {
         }
       }
 
-      config.baseURL =
-        (await AsyncStorage.getItem('SOMEBOX_BASE_URL_ADDRESS')) ||
-        DEFAULT_BASE_URL;
+      if (Platform.OS !== 'web') {
+        config.baseURL =
+          (await AsyncStorage.getItem('SOMEBOX_BASE_URL_ADDRESS')) ||
+          DEFAULT_BASE_URL;
+      } else {
+        config.baseURL = '/api/v1';
+      }
 
       return config;
     },
@@ -28,6 +33,10 @@ export const createAxiosResponseInterceptor = () => {
     async error => {
       console.log('Error from interceptor: ', JSON.stringify(error, null, 2));
       const originalConfig = error.config;
+
+      if (error.response == null) {
+        return Promise.reject(error);
+      }
 
       // Reject promise if usual error
       if (error.response.status !== 401) {
@@ -67,7 +76,7 @@ export const createAxiosResponseInterceptor = () => {
             },
           );
 
-          const {access_token, refresh_token} = response.data;
+          const { access_token, refresh_token } = response.data;
           originalConfig.headers['Authorization'] = `Bearer ${access_token}`;
 
           await AsyncStorage.setItem('SOMEBOX_ACCESS_TOKEN', access_token);

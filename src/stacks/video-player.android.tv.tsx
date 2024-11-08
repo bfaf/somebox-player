@@ -91,7 +91,7 @@ const VideoPlayer = ({route}: VideoPlayerProps) => {
     return <Debug data={videoError} />;
   }
 
-  if (accessToken == null || baseURL == null) {
+  if (accessToken.length === 0 && baseURL.length === 0) {
     return <ActivityIndicator size="large" />;
   }
 
