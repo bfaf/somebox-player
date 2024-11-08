@@ -12,37 +12,15 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../redux/store';
 import { selectMovieById } from '../redux/slices/moviesSlice';
-import { OnVideoErrorData } from 'react-native-video';
 import { useLoaderData } from 'react-router-dom';
 import ReactPlayer from 'react-player';
-
-// { params: { videoId: number }}
 
 export const videoLoader = (({ params }: { params: any }) => {
   return params.videoId;
 });
 
-// const Video = (props) => {
-//   const attrs = {
-//     src: props.source,
-//     poster: props.poster,
-//     controls: "controls"
-//   }
-//   const videoPlayer = document.createElement('video');
-//   videoPlayer.setAttribute('src', props.source);
-//   videoPlayer.setAttribute('src', props.source);
-//   return document.createElement("video");
-// }
-
-// const originalFunc = XMLHttpRequest.prototype.setRequestHeader;
-// XMLHttpRequest.prototype.setRequestHeader = (header, value) => {
-//   console.log('setRequestHeader', header);
-//   // originalFunc.call(this, header, value);
-// };
-
 const VideoPlayer = () => {
   const videoId = useLoaderData();
-  console.log('videoId', videoId);
   const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
   const [videoError, setVideoError] = useState<any>(null);
@@ -53,7 +31,6 @@ const VideoPlayer = () => {
   );
 
   const onVideoError = (error: any) => {
-    console.log('onVideoError', error);
     setVideoError(
       `Error occured during playback. Please press OK and try to play the movie again. Error:\n ${error}`,
     );
@@ -77,26 +54,21 @@ const VideoPlayer = () => {
     return () => {
       setAccessToken('');
     };
-  }, [dispatch, setAccessToken]);
+  }, [dispatch, setAccessToken, setVideoError]);
 
-  // if (videoError != null) {
-  //   return <Debug data={videoError} />;
-  // }
+  if (videoError != null) {
+    return <Debug data={videoError} />;
+  }
 
   if (accessToken.length === 0 && baseURL.length === 0) {
     return <ActivityIndicator size="large" />;
   }
 
-  console.log('NODE_ENV', process.env.NODE_ENV);
-
-  // dev server
-  // `http://localhost:3000/api/v1/web/play/${videoId}`
-
   return (
     <SafeAreaView>
       <View style={styles.backgroundVideo}>
         <ReactPlayer
-          url={`http://localhost/api/v1/web/play/${videoId}`}
+          url={`${baseURL}/web/play/${videoId}`}
           controls={true}
           width="100%"
           height="100%"

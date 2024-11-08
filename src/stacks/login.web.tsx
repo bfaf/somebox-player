@@ -86,7 +86,6 @@ const Login = (): JSX.Element => {
     const autoLogin = async () => {
       const username = await AsyncStorage.getItem('SOMEBOX_USERNAME');
       const password = await AsyncStorage.getItem('SOMEBOX_PASSWORD');
-      console.log(username, password);
       if (username != null && password != null) {
         await login(username, password);
       } else {
@@ -95,7 +94,6 @@ const Login = (): JSX.Element => {
     };
     if (loginErrorMessage == null && !isLoginPerformed) {
       autoLogin();
-      // setShowForm(true);
     }
   }, [loginErrorMessage, isLoginPerformed, login, setShowForm]);
 
