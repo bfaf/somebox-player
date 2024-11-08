@@ -31,8 +31,15 @@ const VideoPlayer = () => {
   );
 
   const onVideoError = (error: any) => {
+    let err: string;
+    if (typeof error === 'object') {
+      err = JSON.stringify(error, null, 2);
+    } else {
+      err = error;
+    }
+    console.error(error);
     setVideoError(
-      `Error occured during playback. Please press OK and try to play the movie again. Error:\n ${error}`,
+      `Error occured during playback. Please press OK and try to play the movie again. Error:\n ${err}`,
     );
   };
 

@@ -25,11 +25,12 @@ export const initialConfig = createAsyncThunk(
         } else {
           // assume web
           const isDevEnv = process.env.NODE_ENV === 'development';
+          const { hostname, protocol } = window.location;
           initialConfig = {
-            serverIp: 'localhost',
+            serverIp: hostname,
             baseUrl: isDevEnv
-              ? `http://localhost:8080/api/v1`
-              : `http://localhost/api/v1`,
+              ? `${protocol}//${hostname}:8080/api/v1`
+              : `${protocol}//${hostname}/api/v1`,
           };
         }
 
