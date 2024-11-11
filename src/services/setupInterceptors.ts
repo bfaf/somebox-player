@@ -12,7 +12,7 @@ export const createAxiosResponseInterceptor = () => {
       if (!isRefreshTokenUrl && !isLoginUrl) {
         const accessToken = await AsyncStorage.getItem('SOMEBOX_ACCESS_TOKEN');
         if (accessToken != null) {
-          config.headers['Authorization'] = `Bearer ${accessToken}`;
+          config.headers.Authorization = `Bearer ${accessToken}`;
         }
       }
 
@@ -77,7 +77,7 @@ export const createAxiosResponseInterceptor = () => {
           );
 
           const {access_token, refresh_token} = response.data;
-          originalConfig.headers['Authorization'] = `Bearer ${access_token}`;
+          originalConfig.headers.Authorization = `Bearer ${access_token}`;
 
           await AsyncStorage.setItem('SOMEBOX_ACCESS_TOKEN', access_token);
           await AsyncStorage.setItem('SOMEBOX_REFRESH_TOKEN', refresh_token);

@@ -20,7 +20,7 @@ export const initialConfig = createAsyncThunk(
         if (Platform.OS === 'android') {
           initialConfig = {
             serverIp: '192.168.1.9',
-            baseUrl: `http://192.168.1.9:8080/api/v1`,
+            baseUrl: 'http://192.168.1.9:8080/api/v1',
           };
         } else {
           // assume web
