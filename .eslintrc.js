@@ -3,5 +3,6 @@ module.exports = {
   extends: '@react-native',
   env: {
     "jest/globals": true
-  }
+  },
+  plugins: ['testing-library'],
 };

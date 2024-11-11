@@ -1,7 +1,11 @@
 {
   "extends": "@react-native/typescript-config/tsconfig.json",
   "compilerOptions": {
-    "types": ["react-native-web"],
-    "lib": ["DOM"],
-  }
+    "types": [
+      "react-native-web"
+    ],
+    "lib": [
+      "DOM"
+    ],
+  },
 }

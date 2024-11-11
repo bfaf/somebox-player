@@ -74,7 +74,9 @@ const InitSettings = () => {
   }
 
   if (settingsError == null && isSettingsLoading) {
-    return <ActivityIndicator size="large" />;
+    return (
+      <ActivityIndicator size="large" testID="init-settings-loading-spinner" />
+    );
   }
 
   return <></>;

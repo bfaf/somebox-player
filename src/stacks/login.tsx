@@ -147,7 +147,7 @@ const Login = (): JSX.Element => {
   }, [isLoggedIn]);
 
   if (loginErrorMessage == null && (isLoading || !showForm)) {
-    return <ActivityIndicator size="large" />;
+    return <ActivityIndicator size="large" testID="login-loading-spinner" />;
   }
 
   return (

@@ -25,7 +25,7 @@ export const initialConfig = createAsyncThunk(
         } else {
           // assume web
           const isDevEnv = process.env.NODE_ENV === 'development';
-          const { hostname, protocol } = window.location;
+          const {hostname, protocol} = window.location;
           initialConfig = {
             serverIp: hostname,
             baseUrl: isDevEnv
