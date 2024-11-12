@@ -11,6 +11,7 @@ const ErrorPage = (): React.JSX.Element => {
       <Text>Oops!</Text>
       <Text>Sorry, an unexpected error has occurred.</Text>
       <Text>
+        {/* @ts-ignore */}
         <Text>{error.statusText || error.message}</Text>
       </Text>
     </View>
