@@ -154,14 +154,13 @@ function List(): JSX.Element {
         />
       </View>
       <View style={{ flex: 1 }}>
-        <ScrollView>
-          {renderMovies(movies)}
-        </ScrollView>
+        <ScrollView>{renderMovies(movies)}</ScrollView>
       </View>
     </SafeAreaView>
   );
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const styles = StyleSheet.create({
   sectionContainer: {
     marginTop: 32,

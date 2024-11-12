@@ -47,6 +47,7 @@ const POSTER_PADDING = 30;
 function List(): JSX.Element {
   const dispatch: AppDispatch = useDispatch();
   const navigation = useNavigation<LoggedInStackNavigationProp>();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [eventName, setEventName] = useState<string>('');
   const movies = useSelector(selectMovies);
   const isLoaded = useSelector(selectIsLoadedMovies);
@@ -188,6 +189,7 @@ function List(): JSX.Element {
   );
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const styles = StyleSheet.create({
   sectionContainer: {
     marginTop: 32,
