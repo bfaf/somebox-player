@@ -1,7 +1,7 @@
-import {createSlice} from '@reduxjs/toolkit';
-import {RootState} from '../store';
-import {loginUser, refreshAccessToken} from '../thunks/login';
-import {AxiosError} from 'axios';
+import { createSlice } from '@reduxjs/toolkit';
+import { RootState } from '../store';
+import { loginUser, refreshAccessToken } from '../thunks/login';
+import { AxiosError } from 'axios';
 
 const MAX_RETRY_ATTEMPTS = 3;
 interface LoginState {
@@ -30,7 +30,7 @@ export const loginSlice = createSlice({
   extraReducers: builder => {
     builder
       .addCase(loginUser.fulfilled, (state, action) => {
-        const {refresh_expires_in} = action.payload;
+        const { refresh_expires_in } = action.payload;
         return {
           ...state,
           error: undefined,
@@ -41,7 +41,7 @@ export const loginSlice = createSlice({
           retryAttempts: 0,
         };
       })
-      .addCase(loginUser.pending, (state, action) => {
+      .addCase(loginUser.pending, state => {
         if (state.retryAttempts >= MAX_RETRY_ATTEMPTS) {
           return {
             ...state,
@@ -63,7 +63,7 @@ export const loginSlice = createSlice({
         const error =
           action.payload && Object.keys(action.payload).length > 0
             ? (action.payload as AxiosError)
-            : {message: undefined};
+            : { message: undefined };
         return {
           ...state,
           loggedIn: false,
@@ -74,7 +74,7 @@ export const loginSlice = createSlice({
         };
       })
       .addCase(refreshAccessToken.fulfilled, (state, action) => {
-        const {refresh_expires_in} = action.payload;
+        const { refresh_expires_in } = action.payload;
         return {
           ...state,
           isAccessTokenRefreshed: true,
@@ -82,7 +82,7 @@ export const loginSlice = createSlice({
           retryAttempts: 0,
         };
       })
-      .addCase(refreshAccessToken.pending, (state, action) => {
+      .addCase(refreshAccessToken.pending, state => {
         return {
           ...state,
           error: undefined,
@@ -103,7 +103,7 @@ export const loginSlice = createSlice({
         const error =
           action.payload && Object.keys(action.payload).length > 0
             ? (action.payload as AxiosError)
-            : {message: undefined};
+            : { message: undefined };
         return {
           ...state,
           isAccessTokenRefreshed: false,

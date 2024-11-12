@@ -1,9 +1,9 @@
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 
-import {useDispatch, useSelector} from 'react-redux';
-import {useNavigate} from 'react-router-dom';
-import {AppDispatch} from '../redux/store';
-import {initialConfig} from '../redux/thunks/settings';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { AppDispatch } from '../redux/store';
+import { initialConfig } from '../redux/thunks/settings';
 import {
   selectIsSettingsLoading,
   selectSettingsError,
@@ -48,14 +48,13 @@ const InitSettings = () => {
 
   useEffect(() => {
     dispatch(initialConfig());
-  }, [dispatch, initialConfig]);
+  }, [dispatch]);
 
   useEffect(() => {
     if (settingsError == null && !isSettingsLoading) {
-      // console.log('Go to login page');
       navigate('/login');
     }
-  }, [settingsError, isSettingsLoading]);
+  }, [settingsError, isSettingsLoading, navigate]);
 
   if (settingsError != null) {
     // hope this never happens...

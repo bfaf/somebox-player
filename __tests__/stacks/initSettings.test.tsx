@@ -2,10 +2,10 @@ import 'react-native';
 import React from 'react';
 import InitSettings from '../../src/stacks/initSettings';
 
-import {expect, it, jest, describe, beforeEach} from '@jest/globals';
+import { expect, it, jest, describe, beforeEach } from '@jest/globals';
 
-import {renderWithProviders} from '../../utils/test-utils';
-import {setupStore} from '../../src/redux/store';
+import { renderWithProviders } from '../../utils/test-utils';
+import { setupStore } from '../../src/redux/store';
 import * as SettingsSlice from '../../src/redux/slices/settingsSlice';
 
 describe('InitSettings', () => {

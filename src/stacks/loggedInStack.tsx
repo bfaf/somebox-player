@@ -5,11 +5,11 @@ import {
 } from '@react-navigation/native-stack';
 import List from './list';
 import VideoPlayer from './video-player.android.tv';
-import {useLoginTimeout} from '../hooks/useLoginTimeout';
+import { useLoginTimeout } from '../hooks/useLoginTimeout';
 
 export type LoggedInStackParamList = {
   List: undefined;
-  Player: {videoId: number};
+  Player: { videoId: number };
 };
 
 export type LoggedInStackNavigationProp =

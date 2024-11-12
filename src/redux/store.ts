@@ -1,4 +1,4 @@
-import {combineReducers, configureStore} from '@reduxjs/toolkit';
+import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import loginReducer from './slices/loginSlice';
 import moviesReducer from './slices/moviesSlice';
 import settingsReducer from './slices/settingsSlice';

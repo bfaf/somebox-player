@@ -1,4 +1,4 @@
-import React, {useState, useRef, useEffect} from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Video from 'react-native-media-console';
 import {
   SafeAreaView,
@@ -7,27 +7,25 @@ import {
   Dimensions,
   useTVEventHandler,
   HWEvent,
-  Platform,
-  ToastAndroid,
   ActivityIndicator,
 } from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import Debug from '../components/debug';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {useDispatch, useSelector} from 'react-redux';
-import {AppDispatch, RootState} from '../redux/store';
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {LoggedInStackParamList} from './loggedInStack';
-import {selectMovieById} from '../redux/slices/moviesSlice';
-import {OnProgressData, OnVideoErrorData} from 'react-native-video';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../redux/store';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { LoggedInStackParamList } from './loggedInStack';
+import { selectMovieById } from '../redux/slices/moviesSlice';
+import { OnProgressData, OnVideoErrorData } from 'react-native-video';
 
 type VideoPlayerProps = NativeStackScreenProps<
   LoggedInStackParamList,
   'Player'
 >;
 
-const VideoPlayer = ({route}: VideoPlayerProps) => {
-  const {videoId} = route?.params;
+const VideoPlayer = ({ route }: VideoPlayerProps) => {
+  const { videoId } = route?.params;
   const dispatch: AppDispatch = useDispatch();
   const navigation = useNavigation();
   const [isPaused, setIsPaused] = useState<boolean>(false);
@@ -53,9 +51,7 @@ const VideoPlayer = ({route}: VideoPlayerProps) => {
     }
   };
 
-  if (Platform.isTV) {
-    useTVEventHandler(myTVEventHandler);
-  }
+  useTVEventHandler(myTVEventHandler);
 
   const onVideoError = (error: OnVideoErrorData) => {
     setVideoError(

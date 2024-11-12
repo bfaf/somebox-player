@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useCallback} from 'react';
+import React, { useEffect, useCallback } from 'react';
 import {
   ActivityIndicator,
   AppBar,
@@ -6,13 +6,13 @@ import {
   VStack,
   IconButton,
 } from '@react-native-material/core';
-import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import {
   faArrowsRotate,
   faEllipsisVertical,
   faMagnifyingGlass,
 } from '@fortawesome/free-solid-svg-icons';
-import {Outlet, Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import {
   SafeAreaView,
@@ -24,17 +24,17 @@ import {
   Dimensions,
 } from 'react-native';
 
-import {MovieData} from '../constants';
+import { MovieData } from '../constants';
 import Debug from '../components/debug';
-import {AppDispatch} from '../redux/store';
-import {useDispatch, useSelector} from 'react-redux';
+import { AppDispatch } from '../redux/store';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   selectErrorMovies,
   selectIsLoadedMovies,
   selectIsLoadingMovies,
   selectMovies,
 } from '../redux/slices/moviesSlice';
-import {fetchMovies} from '../redux/thunks/movies';
+import { fetchMovies } from '../redux/thunks/movies';
 
 const POSTER_WIDTH = 120;
 const POSTER_HEIGHT = 179;
@@ -53,7 +53,7 @@ function List(): JSX.Element {
     if (!isLoaded && isLoading) {
       dispatch(fetchMovies());
     }
-  }, [isLoaded, isLoading]);
+  }, [isLoaded, isLoading, dispatch]);
 
   const renderMovies = useCallback((moviesData: MovieData[]) => {
     const rows = [];
@@ -75,17 +75,17 @@ function List(): JSX.Element {
         }}>
         {rows.map((row, idx: number) => (
           <HStack m={POSTER_PADDING} spacing={8} key={idx}>
-            {row.map((r: MovieData, innerIdx: number) => (
+            {row.map((r: MovieData) => (
               <View
                 key={r.filename}
-                style={{display: 'flex', flexDirection: 'row'}}>
+                style={{ display: 'flex', flexDirection: 'row' }}>
                 <Link key={r.filename} to={`/video/${r.movieId}`}>
                   <Image
                     source={{
                       uri: `data:image/png;base64,${r.moviesMetadataEntity.poster}`,
                     }}
                     resizeMode="cover"
-                    style={{width: POSTER_WIDTH, height: POSTER_HEIGHT}}
+                    style={{ width: POSTER_WIDTH, height: POSTER_HEIGHT }}
                   />
                   <Text
                     numberOfLines={2}
@@ -114,37 +114,37 @@ function List(): JSX.Element {
   }
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{ flex: 1 }}>
       <View>
         <AppBar
-          title="SomeBox Player"
-          style={{marginBottom: 0, paddingBottom: 0}}
+          title="YoFlix"
+          style={{ marginBottom: 0, paddingBottom: 0 }}
           trailing={props => (
             <HStack>
               <IconButton
-                icon={props => (
+                icon={() => (
                   <FontAwesomeIcon
                     icon={faMagnifyingGlass}
-                    style={{color: 'white'}}
+                    style={{ color: 'white' }}
                   />
                 )}
                 {...props}
               />
               <IconButton
                 onPress={() => dispatch(fetchMovies())}
-                icon={props => (
+                icon={() => (
                   <FontAwesomeIcon
                     icon={faArrowsRotate}
-                    style={{color: 'white'}}
+                    style={{ color: 'white' }}
                   />
                 )}
                 {...props}
               />
               <IconButton
-                icon={props => (
+                icon={() => (
                   <FontAwesomeIcon
                     icon={faEllipsisVertical}
-                    style={{color: 'white'}}
+                    style={{ color: 'white' }}
                   />
                 )}
                 {...props}
@@ -153,10 +153,11 @@ function List(): JSX.Element {
           )}
         />
       </View>
-
-      <ScrollView style={{marginBottom: 50}}>
-        <>{renderMovies(movies)}</>
-      </ScrollView>
+      <View style={{ flex: 1 }}>
+        <ScrollView>
+          {renderMovies(movies)}
+        </ScrollView>
+      </View>
     </SafeAreaView>
   );
 }

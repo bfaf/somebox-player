@@ -1,12 +1,12 @@
-import React, {useEffect} from 'react';
-import {Alert} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import React, { useEffect } from 'react';
+import { Alert } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 type AlertProps = {
   data: unknown;
 };
 
-const Debug = ({data}: AlertProps) => {
+const Debug = ({ data }: AlertProps) => {
   const navigation = useNavigation();
 
   let newData = data;
@@ -26,10 +26,10 @@ const Debug = ({data}: AlertProps) => {
             style: 'destructive',
           },
         ],
-        {cancelable: false},
+        { cancelable: false },
       );
     }
-  }, [newData]);
+  }, [newData, navigation]);
 
   return <></>;
 };

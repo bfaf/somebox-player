@@ -2,10 +2,10 @@
 
 buildscript {
     ext {
-        buildToolsVersion = "34.0.0"
-        minSdkVersion = 23
-        compileSdkVersion = 34
-        targetSdkVersion = 34
+        buildToolsVersion = "35.0.0"
+        minSdkVersion = 26 // this is for Android 8 and cannot be any bigger than that
+        compileSdkVersion = 35
+        targetSdkVersion = 35
         ndkVersion = "27.2.12479018"
         kotlinVersion = "1.9.24"
         supportLibVersion = "28.0.0"

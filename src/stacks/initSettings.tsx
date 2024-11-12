@@ -1,13 +1,13 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect } from 'react';
 
-import {useDispatch, useSelector} from 'react-redux';
-import {AppDispatch} from '../redux/store';
-import {initialConfig} from '../redux/thunks/settings';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch } from '../redux/store';
+import { initialConfig } from '../redux/thunks/settings';
 import {
   selectIsSettingsLoading,
   selectSettingsError,
 } from '../redux/slices/settingsSlice';
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import {
   SafeAreaView,
   ActivityIndicator,
@@ -15,7 +15,7 @@ import {
   Text,
   StyleSheet,
 } from 'react-native';
-import {LoginStackNavigationProp} from '.';
+import { LoginStackNavigationProp } from '.';
 
 const styles = StyleSheet.create({
   content: {
@@ -49,7 +49,7 @@ const InitSettings = () => {
 
   useEffect(() => {
     dispatch(initialConfig());
-  }, [dispatch, initialConfig]);
+  }, [dispatch]);
 
   useEffect(() => {
     if (settingsError == null && !isSettingsLoading) {

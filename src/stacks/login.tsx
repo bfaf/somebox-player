@@ -1,9 +1,9 @@
-import React, {useEffect, useState} from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
-import {useDispatch, useSelector} from 'react-redux';
-import {AppDispatch} from '../redux/store';
-import {loginUser} from '../redux/thunks/login';
-import {useNavigation} from '@react-navigation/native';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch } from '../redux/store';
+import { loginUser } from '../redux/thunks/login';
+import { useNavigation } from '@react-navigation/native';
 import {
   selectIsLoginLoading,
   selectIsLoginPerformed,
@@ -20,14 +20,13 @@ import {
   ActivityIndicator,
   Image,
   HWEvent,
-  Platform,
   useTVEventHandler,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {LoginStackNavigationProp} from '.';
-import {IconButton} from '@react-native-material/core';
-import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
-import {faGear} from '@fortawesome/free-solid-svg-icons';
+import { LoginStackNavigationProp } from '.';
+import { IconButton } from '@react-native-material/core';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { faGear } from '@fortawesome/free-solid-svg-icons';
 
 const styles = StyleSheet.create({
   container: {
@@ -109,9 +108,7 @@ const Login = (): JSX.Element => {
     }
   };
 
-  if (Platform.isTV) {
-    useTVEventHandler(myTVEventHandler);
-  }
+  useTVEventHandler(myTVEventHandler);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('beforeRemove', e => {
@@ -121,16 +118,19 @@ const Login = (): JSX.Element => {
     return unsubscribe;
   }, [navigation]);
 
-  const login = async (username: string, password: string) => {
-    await dispatch(loginUser({username, password}));
-  };
+  const login = useCallback(
+    async (user: string, pass: string) => {
+      await dispatch(loginUser({ username: user, password: pass }));
+    },
+    [dispatch],
+  );
 
   useEffect(() => {
     const autoLogin = async () => {
-      const username = await AsyncStorage.getItem('SOMEBOX_USERNAME');
-      const password = await AsyncStorage.getItem('SOMEBOX_PASSWORD');
-      if (username != null && password != null) {
-        await login(username, password);
+      const user = await AsyncStorage.getItem('SOMEBOX_USERNAME');
+      const pass = await AsyncStorage.getItem('SOMEBOX_PASSWORD');
+      if (user != null && pass != null) {
+        await login(user, pass);
       } else {
         setShowForm(true);
       }
@@ -144,7 +144,7 @@ const Login = (): JSX.Element => {
     if (isLoggedIn) {
       navigation.navigate('LoggedInStack');
     }
-  }, [isLoggedIn]);
+  }, [isLoggedIn, navigation]);
 
   if (loginErrorMessage == null && (isLoading || !showForm)) {
     return <ActivityIndicator size="large" testID="login-loading-spinner" />;
@@ -174,8 +174,8 @@ const Login = (): JSX.Element => {
             ref={usernameRef}
           />
           <IconButton
-            icon={props => (
-              <FontAwesomeIcon icon={faGear} style={{color: 'black'}} />
+            icon={() => (
+              <FontAwesomeIcon icon={faGear} style={{ color: 'black' }} />
             )}
             onFocus={() => setCurrentlySelectedElement('settings')}
             onPress={() => navigation.navigate('LoginSettings')}

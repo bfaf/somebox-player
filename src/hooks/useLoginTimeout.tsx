@@ -1,11 +1,11 @@
-import {useEffect, useRef} from 'react';
-import {loginUser, refreshAccessToken} from '../redux/thunks/login';
-import {AppDispatch} from '../redux/store';
-import {useDispatch, useSelector} from 'react-redux';
-import {useNavigation} from '@react-navigation/native';
-import {AppState} from 'react-native';
+import { useEffect, useRef } from 'react';
+import { loginUser, refreshAccessToken } from '../redux/thunks/login';
+import { AppDispatch } from '../redux/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigation } from '@react-navigation/native';
+import { AppState } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {selectRefreshTokenExpiresIn} from '../redux/slices/loginSlice';
+import { selectRefreshTokenExpiresIn } from '../redux/slices/loginSlice';
 
 export const useLoginTimeout = () => {
   const appState = useRef(AppState.currentState);
@@ -24,7 +24,7 @@ export const useLoginTimeout = () => {
         const username = await AsyncStorage.getItem('SOMEBOX_USERNAME');
         const password = await AsyncStorage.getItem('SOMEBOX_PASSWORD');
         if (username != null && password != null) {
-          await dispatch(loginUser({username, password}));
+          await dispatch(loginUser({ username, password }));
         } else {
           throw new Error(
             'Cannot read username or password from storage. Please restart the app.',
@@ -56,5 +56,5 @@ export const useLoginTimeout = () => {
       navigationSubscribtion();
       appStateSubscription.remove();
     };
-  }, [navigation, refreshTokenExpiresIn]);
+  }, [navigation, refreshTokenExpiresIn, dispatch]);
 };

@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useCallback} from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   ActivityIndicator,
   AppBar,
@@ -6,13 +6,13 @@ import {
   VStack,
   IconButton,
 } from '@react-native-material/core';
-import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import {
   faArrowsRotate,
   faEllipsisVertical,
   faMagnifyingGlass,
 } from '@fortawesome/free-solid-svg-icons';
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 
 import {
   SafeAreaView,
@@ -25,21 +25,20 @@ import {
   Dimensions,
   useTVEventHandler,
   HWEvent,
-  Platform,
 } from 'react-native';
 
-import {MovieData} from '../constants';
+import { MovieData } from '../constants';
 import Debug from '../components/debug';
-import {AppDispatch} from '../redux/store';
-import {useDispatch, useSelector} from 'react-redux';
+import { AppDispatch } from '../redux/store';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   selectErrorMovies,
   selectIsLoadedMovies,
   selectIsLoadingMovies,
   selectMovies,
 } from '../redux/slices/moviesSlice';
-import {fetchMovies} from '../redux/thunks/movies';
-import {LoggedInStackNavigationProp} from './loggedInStack';
+import { fetchMovies } from '../redux/thunks/movies';
+import { LoggedInStackNavigationProp } from './loggedInStack';
 
 const POSTER_WIDTH = 120;
 const POSTER_HEIGHT = 179;
@@ -67,15 +66,13 @@ function List(): JSX.Element {
     if (!isLoaded && isLoading) {
       dispatch(fetchMovies());
     }
-  }, [isLoaded, isLoading]);
+  }, [isLoaded, isLoading, dispatch]);
 
   const myTVEventHandler = (evt: HWEvent) => {
     setEventName(evt.eventType);
   };
 
-  if (Platform.isTV) {
-    useTVEventHandler(myTVEventHandler);
-  }
+  useTVEventHandler(myTVEventHandler);
 
   const renderMovies = useCallback(
     (moviesData: MovieData[]) => {
@@ -101,19 +98,19 @@ function List(): JSX.Element {
               {row.map((r: MovieData, innerIdx: number) => (
                 <View
                   key={r.filename}
-                  style={{display: 'flex', flexDirection: 'row'}}>
+                  style={{ display: 'flex', flexDirection: 'row' }}>
                   <TouchableOpacity
                     key={r.filename}
                     hasTVPreferredFocus={idx === 0 && innerIdx === 0}
                     onPress={() => {
-                      navigation.navigate('Player', {videoId: r.movieId});
+                      navigation.navigate('Player', { videoId: r.movieId });
                     }}>
                     <Image
                       source={{
                         uri: `data:image/png;base64,${r.moviesMetadataEntity.poster}`,
                       }}
                       resizeMode="cover"
-                      style={{width: POSTER_WIDTH, height: POSTER_HEIGHT}}
+                      style={{ width: POSTER_WIDTH, height: POSTER_HEIGHT }}
                     />
                     <Text
                       numberOfLines={2}
@@ -147,34 +144,34 @@ function List(): JSX.Element {
     <SafeAreaView>
       <View>
         <AppBar
-          title="SomeBox Player"
-          style={{marginBottom: 0, paddingBottom: 0}}
+          title="YoFlix"
+          style={{ marginBottom: 0, paddingBottom: 0 }}
           trailing={props => (
             <HStack>
               <IconButton
-                icon={props => (
+                icon={() => (
                   <FontAwesomeIcon
                     icon={faMagnifyingGlass}
-                    style={{color: 'white'}}
+                    style={{ color: 'white' }}
                   />
                 )}
                 {...props}
               />
               <IconButton
                 onPress={() => dispatch(fetchMovies())}
-                icon={props => (
+                icon={() => (
                   <FontAwesomeIcon
                     icon={faArrowsRotate}
-                    style={{color: 'white'}}
+                    style={{ color: 'white' }}
                   />
                 )}
                 {...props}
               />
               <IconButton
-                icon={props => (
+                icon={() => (
                   <FontAwesomeIcon
                     icon={faEllipsisVertical}
-                    style={{color: 'white'}}
+                    style={{ color: 'white' }}
                   />
                 )}
                 {...props}
@@ -184,7 +181,7 @@ function List(): JSX.Element {
         />
       </View>
 
-      <ScrollView style={{marginBottom: 50}}>
+      <ScrollView style={{ marginBottom: 50 }}>
         <>{renderMovies(movies)}</>
       </ScrollView>
     </SafeAreaView>

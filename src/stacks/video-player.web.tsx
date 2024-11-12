@@ -1,5 +1,5 @@
-import React, {useState, useEffect} from 'react';
-import {useNavigate} from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   SafeAreaView,
   StyleSheet,
@@ -9,13 +9,13 @@ import {
 } from 'react-native';
 import Debug from '../components/debug';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {useDispatch, useSelector} from 'react-redux';
-import {AppDispatch, RootState} from '../redux/store';
-import {selectMovieById} from '../redux/slices/moviesSlice';
-import {useLoaderData} from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../redux/store';
+import { selectMovieById } from '../redux/slices/moviesSlice';
+import { useLoaderData } from 'react-router-dom';
 import ReactPlayer from 'react-player';
 
-export const videoLoader = ({params}: {params: any}) => {
+export const videoLoader = ({ params }: { params: any }) => {
   return params.videoId;
 };
 
@@ -26,8 +26,9 @@ const VideoPlayer = () => {
   const [videoError, setVideoError] = useState<any>(null);
   const [accessToken, setAccessToken] = useState<string>('');
   const [baseURL, setBaseURL] = useState<string>('');
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const movieData = useSelector((state: RootState) =>
-    selectMovieById(state, Number.parseInt(`${videoId}`)),
+    selectMovieById(state, Number.parseInt(`${videoId}`, 10)),
   );
 
   const onVideoError = (error: any) => {
@@ -45,11 +46,11 @@ const VideoPlayer = () => {
 
   useEffect(() => {
     const getAccessToken = async () => {
-      const accessToken = await AsyncStorage.getItem('SOMEBOX_ACCESS_TOKEN');
-      const baseURL = await AsyncStorage.getItem('SOMEBOX_BASE_URL_ADDRESS');
-      if (accessToken != null && baseURL != null) {
-        setAccessToken(accessToken);
-        setBaseURL(baseURL);
+      const accToken = await AsyncStorage.getItem('SOMEBOX_ACCESS_TOKEN');
+      const bURL = await AsyncStorage.getItem('SOMEBOX_BASE_URL_ADDRESS');
+      if (accToken != null && bURL != null) {
+        setAccessToken(accToken);
+        setBaseURL(bURL);
       } else {
         setVideoError(
           'Cannot read access token from storage. Please restart the app',

@@ -1,8 +1,8 @@
-import {createSelector, createSlice} from '@reduxjs/toolkit';
-import {RootState} from '../store';
-import {AxiosError} from 'axios';
-import {MovieData} from '../../constants';
-import {fetchMovies} from '../thunks/movies';
+import { createSelector, createSlice } from '@reduxjs/toolkit';
+import { RootState } from '../store';
+import { AxiosError } from 'axios';
+import { MovieData } from '../../constants';
+import { fetchMovies } from '../thunks/movies';
 
 interface MoviesState {
   movies?: MovieData[];
@@ -39,7 +39,7 @@ export const moviesSlice = createSlice({
           isLoaded: true,
         };
       })
-      .addCase(fetchMovies.pending, (state, action) => {
+      .addCase(fetchMovies.pending, state => {
         return {
           ...state,
           movies: undefined,
@@ -59,7 +59,7 @@ export const moviesSlice = createSlice({
   },
 });
 
-export const {resetMoviesState} = moviesSlice.actions;
+export const { resetMoviesState } = moviesSlice.actions;
 export const selectMovies = (state: RootState) => state.movies.movies;
 export const selectIsLoadingMovies = (state: RootState) =>
   state.movies.isLoading;

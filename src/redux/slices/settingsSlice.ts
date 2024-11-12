@@ -1,6 +1,6 @@
-import {createSlice} from '@reduxjs/toolkit';
-import {RootState} from '../store';
-import {initialConfig, updateIpAddress} from '../thunks/settings';
+import { createSlice } from '@reduxjs/toolkit';
+import { RootState } from '../store';
+import { initialConfig, updateIpAddress } from '../thunks/settings';
 
 interface SettingsState {
   serverIp: string;
@@ -77,7 +77,7 @@ export const settingsSlice = createSlice({
   },
 });
 
-export const {resetUpdateState} = settingsSlice.actions;
+export const { resetUpdateState } = settingsSlice.actions;
 
 export const selectServerIpAddress = (state: RootState) =>
   state.settings.serverIp;

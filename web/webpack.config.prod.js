@@ -7,7 +7,7 @@ const appDirectory = path.resolve(__dirname, '../');
 const HTMLWebpackPluginConfig = new HtmlWebpackPlugin({
   template: path.resolve(__dirname, '../public/index.html'),
   filename: 'index.html',
-  inject: 'body'
+  inject: 'body',
 });
 
 // This is needed for webpack to compile JavaScript.
@@ -31,8 +31,8 @@ const babelLoaderConfiguration = {
       presets: ['module:@react-native/babel-preset'],
       // Re-write paths to import only the modules needed by the app
       plugins: ['react-native-web'],
-    }
-  }
+    },
+  },
 };
 
 // This is needed for webpack to import static images in JavaScript files.
@@ -43,8 +43,8 @@ const imageLoaderConfiguration = {
     options: {
       name: '[name].[ext]',
       esModule: false,
-    }
-  }
+    },
+  },
 };
 
 module.exports = {
@@ -54,7 +54,7 @@ module.exports = {
     // load any web API polyfills
     // path.resolve(appDirectory, 'polyfills-web.js'),
     // your web-specific entry file
-    path.resolve(appDirectory, 'index.web.js')
+    path.resolve(appDirectory, 'index.web.js'),
   ],
 
   // configures where the build ends up
@@ -67,10 +67,7 @@ module.exports = {
   // ...the rest of your config
 
   module: {
-    rules: [
-      babelLoaderConfiguration,
-      imageLoaderConfiguration
-    ]
+    rules: [babelLoaderConfiguration, imageLoaderConfiguration],
   },
 
   devServer: {
@@ -88,7 +85,7 @@ module.exports = {
         context: ['/api'],
         target: 'http://localhost:8080',
       },
-    ]
+    ],
   },
 
   plugins: [HTMLWebpackPluginConfig],
@@ -96,11 +93,20 @@ module.exports = {
   resolve: {
     // This will only alias the exact import "react-native"
     alias: {
-      'react-native$': 'react-native-web'
+      'react-native$': 'react-native-web',
     },
     // If you're working on a multi-platform React Native app, web-specific
     // module implementations should be written in files using the extension
     // `.web.js`.
-    extensions: ['.web.js', '.web.jsx', '.web.tsx', '.web.ts', '.tsx', '.ts', '.jsx', '.js']
-  }
-}
+    extensions: [
+      '.web.js',
+      '.web.jsx',
+      '.web.tsx',
+      '.web.ts',
+      '.tsx',
+      '.ts',
+      '.jsx',
+      '.js',
+    ],
+  },
+};

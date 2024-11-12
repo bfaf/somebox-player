@@ -13,8 +13,8 @@ import { NavigationContainer } from '@react-navigation/native';
 // This type interface extends the default options for render from RTL, as well
 // as allows the user to specify other things such as initialState, store.
 interface ExtendedRenderOptions extends Omit<RenderOptions, 'queries'> {
-  preloadedState?: Partial<RootState>
-  store?: AppStore
+  preloadedState?: Partial<RootState>;
+  store?: AppStore;
 }
 
 export const renderWithProviders = (
@@ -24,21 +24,19 @@ export const renderWithProviders = (
     // Automatically create a store instance if no store was passed in
     store = setupStore(preloadedState),
     ...renderOptions
-  }: ExtendedRenderOptions = {}
+  }: ExtendedRenderOptions = {},
 ) => {
   const Wrapper = ({ children }: PropsWithChildren) => (
     <Provider store={store}>
-      <NavigationContainer>
-          {children}
-      </NavigationContainer>
+      <NavigationContainer>{children}</NavigationContainer>
     </Provider>
-  )
+  );
 
   // Return an object with the store and all of RTL's query functions
   return {
     store,
-    ...render(ui, { wrapper: Wrapper, ...renderOptions })
-  }
-}
+    ...render(ui, { wrapper: Wrapper, ...renderOptions }),
+  };
+};
 
 export * from '@testing-library/react-native';

@@ -1,7 +1,7 @@
-import {useNavigation} from '@react-navigation/native';
-import React, {useEffect, useState} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
-import {AppDispatch} from '../redux/store';
+import { useNavigation } from '@react-navigation/native';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch } from '../redux/store';
 import {
   SafeAreaView,
   StyleSheet,
@@ -9,7 +9,6 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  ActivityIndicator,
   Image,
 } from 'react-native';
 import {
@@ -18,7 +17,7 @@ import {
   selectServerIpAddress,
   selectSettingsError,
 } from '../redux/slices/settingsSlice';
-import {updateIpAddress} from '../redux/thunks/settings';
+import { updateIpAddress } from '../redux/thunks/settings';
 
 const styles = StyleSheet.create({
   container: {
@@ -84,7 +83,7 @@ const LoginSettings = () => {
       dispatch(resetUpdateState());
       navigation.goBack();
     }
-  }, [isSettingsUpdated]);
+  }, [isSettingsUpdated, dispatch, navigation]);
 
   return (
     <SafeAreaView>
@@ -92,7 +91,7 @@ const LoginSettings = () => {
         <Image style={styles.logo} source={require('../images/logo.png')} />
       </View>
       {settingsError != null && (
-        <View style={{alignItems: 'center'}}>
+        <View style={{ alignItems: 'center' }}>
           <Text style={styles.infoText}>
             Error occured while updating the settings
           </Text>

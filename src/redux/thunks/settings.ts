@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {createAsyncThunk} from '@reduxjs/toolkit';
-import {DEFAULT_BASE_URL, DEFAULT_SERVER_IP} from '../../constants';
-import {Platform} from 'react-native';
+import { createAsyncThunk } from '@reduxjs/toolkit';
+import { DEFAULT_BASE_URL, DEFAULT_SERVER_IP } from '../../constants';
+import { Platform } from 'react-native';
 
 type InitialConfig = {
   serverIp: string;
@@ -10,7 +10,7 @@ type InitialConfig = {
 
 export const initialConfig = createAsyncThunk(
   'settings/initialConfig',
-  async (_, {fulfillWithValue, rejectWithValue}) => {
+  async (_, { fulfillWithValue, rejectWithValue }) => {
     try {
       let initialConfig: InitialConfig;
       const isInitialConfigPassed = await AsyncStorage.getItem(
@@ -25,7 +25,7 @@ export const initialConfig = createAsyncThunk(
         } else {
           // assume web
           const isDevEnv = process.env.NODE_ENV === 'development';
-          const {hostname, protocol} = window.location;
+          const { hostname, protocol } = window.location;
           initialConfig = {
             serverIp: hostname,
             baseUrl: isDevEnv
@@ -63,7 +63,7 @@ export const initialConfig = createAsyncThunk(
 
 export const updateIpAddress = createAsyncThunk(
   'settings/updateIpAddress',
-  async (ipAddress: string, {fulfillWithValue, rejectWithValue}) => {
+  async (ipAddress: string, { fulfillWithValue, rejectWithValue }) => {
     try {
       const newConfig = {
         serverIp: ipAddress,

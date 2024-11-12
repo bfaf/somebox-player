@@ -1,9 +1,9 @@
-import React, {useEffect, useState} from 'react';
-import {useNavigate} from 'react-router-dom';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-import {useDispatch, useSelector} from 'react-redux';
-import {AppDispatch} from '../redux/store';
-import {loginUser} from '../redux/thunks/login';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch } from '../redux/store';
+import { loginUser } from '../redux/thunks/login';
 import {
   selectIsLoginLoading,
   selectIsLoginPerformed,
@@ -78,16 +78,19 @@ const Login = (): JSX.Element => {
 
   // add a listener to prevent going pack to initial settings
 
-  const login = async (username: string, password: string) => {
-    await dispatch(loginUser({username, password}));
-  };
+  const login = useCallback(
+    async (user: string, pass: string) => {
+      await dispatch(loginUser({ username: user, password: pass }));
+    },
+    [dispatch],
+  );
 
   useEffect(() => {
     const autoLogin = async () => {
-      const username = await AsyncStorage.getItem('SOMEBOX_USERNAME');
-      const password = await AsyncStorage.getItem('SOMEBOX_PASSWORD');
-      if (username != null && password != null) {
-        await login(username, password);
+      const user = await AsyncStorage.getItem('SOMEBOX_USERNAME');
+      const pass = await AsyncStorage.getItem('SOMEBOX_PASSWORD');
+      if (user != null && pass != null) {
+        await login(user, pass);
       } else {
         setShowForm(true);
       }
@@ -101,7 +104,7 @@ const Login = (): JSX.Element => {
     if (isLoggedIn) {
       navigate('/list');
     }
-  }, [isLoggedIn]);
+  }, [isLoggedIn, navigate]);
 
   if (loginErrorMessage == null && (isLoading || !showForm)) {
     return <ActivityIndicator size="large" />;
@@ -110,7 +113,7 @@ const Login = (): JSX.Element => {
   return (
     <SafeAreaView>
       <View>
-        <Image style={styles.logo} source={{uri: '../images/logo.png'}} />
+        <Image style={styles.logo} source={{ uri: '../images/logo.png' }} />
       </View>
       <View style={styles.container}>
         {loginErrorMessage != null && (

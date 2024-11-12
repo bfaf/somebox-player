@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {createAsyncThunk} from '@reduxjs/toolkit';
+import { createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../../services/api';
 
 type UserLogin = {
@@ -9,11 +9,11 @@ type UserLogin = {
 
 export const loginUser = createAsyncThunk(
   'login/loginUser',
-  async (value: UserLogin, {fulfillWithValue, rejectWithValue}) => {
+  async (value: UserLogin, { fulfillWithValue, rejectWithValue }) => {
     try {
       // consider using react-native-keychain package to store username and password
       // https://oblador.github.io/react-native-keychain/docs/usage
-      const res = await api.post('/login', {...value});
+      const res = await api.post('/login', { ...value });
       await AsyncStorage.setItem('SOMEBOX_ACCESS_TOKEN', res.data.access_token);
       await AsyncStorage.setItem(
         'SOMEBOX_REFRESH_TOKEN',
@@ -36,12 +36,12 @@ export const loginUser = createAsyncThunk(
 
 export const refreshAccessToken = createAsyncThunk(
   'login/refreshAccessToken',
-  async (_, {fulfillWithValue, rejectWithValue}) => {
+  async (_, { fulfillWithValue, rejectWithValue }) => {
     try {
       const refreshToken = await AsyncStorage.getItem('SOMEBOX_REFRESH_TOKEN');
       const res = await api.post(
         '/refreshToken',
-        {refreshToken},
+        { refreshToken },
         {
           headers: {
             Authorization: undefined,
