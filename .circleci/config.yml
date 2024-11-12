@@ -3,12 +3,29 @@ version: 2.1
 workflows:
   test-deploy:
     jobs:
-      - test
+      - build
 
 jobs:
-  test:
+  build:
     docker:
       - image: cimg/node:20.12.0
     steps:
       - checkout
-      - run: node --version
+      - run:
+          name: Install dependencies
+          command: yarn install
+      - run:
+          name: Check types dependencies
+          command: yarn typecheck
+      - run:
+          name: Check formatting
+          command: yarn format:check
+      - run:
+          name: Check linting
+          command: yarn lint
+      - run:
+          name: Run unit tests
+          command: yarn test
+      - run:
+          name: Build
+          command: yarn build:web
