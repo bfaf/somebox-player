@@ -17,7 +17,7 @@ export const useLoginTimeout = () => {
     const verifyTimeout = async () => {
       const loginTimestamp =
         (await AsyncStorage.getItem('SOMEBOX_LOGIN_TIMESTAMP')) || '0';
-      const loginTime = Number.parseInt(loginTimestamp);
+      const loginTime = Number.parseInt(loginTimestamp, 10);
       if (Date.now() - loginTime < refreshTokenExpiresIn * 1000) {
         dispatch(refreshAccessToken());
       } else {

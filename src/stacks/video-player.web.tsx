@@ -14,6 +14,7 @@ import { AppDispatch, RootState } from '../redux/store';
 import { selectMovieById } from '../redux/slices/moviesSlice';
 import { useLoaderData } from 'react-router-dom';
 import ReactPlayer from 'react-player';
+import { useLoginTimeout } from '../hooks/useLoginTimeout';
 
 export const videoLoader = ({ params }: { params: any }) => {
   return params.videoId;
@@ -30,6 +31,9 @@ const VideoPlayer = () => {
   const movieData = useSelector((state: RootState) =>
     selectMovieById(state, Number.parseInt(`${videoId}`, 10)),
   );
+
+  // TODO: Make this global for all components
+  useLoginTimeout();
 
   const onVideoError = (error: any) => {
     let err: string;
@@ -76,7 +80,7 @@ const VideoPlayer = () => {
     <SafeAreaView>
       <View style={styles.backgroundVideo}>
         <ReactPlayer
-          url={`${baseURL}/web/play/${videoId}`}
+          url={`${baseURL}/web/play/${videoId}?t=${accessToken}`}
           controls={true}
           width="100%"
           height="100%"

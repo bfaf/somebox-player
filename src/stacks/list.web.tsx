@@ -35,6 +35,7 @@ import {
   selectMovies,
 } from '../redux/slices/moviesSlice';
 import { fetchMovies } from '../redux/thunks/movies';
+import { useLoginTimeout } from '../hooks/useLoginTimeout';
 
 const POSTER_WIDTH = 120;
 const POSTER_HEIGHT = 179;
@@ -46,6 +47,8 @@ function List(): JSX.Element {
   const isLoaded = useSelector(selectIsLoadedMovies);
   const isLoading = useSelector(selectIsLoadingMovies);
   const errorMessage = useSelector(selectErrorMovies);
+  // TODO: Make this global for all components
+  useLoginTimeout();
 
   // Prevent going back
 

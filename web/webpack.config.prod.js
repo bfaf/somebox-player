@@ -70,23 +70,23 @@ module.exports = {
     rules: [babelLoaderConfiguration, imageLoaderConfiguration],
   },
 
-  devServer: {
-    // static: {
-    //   directory: path.join(__dirname, '../dist'),
-    // },
-    compress: true,
-    port: 3000,
-    allowedHosts: 'all',
-    client: {
-      overlay: true,
-    },
-    proxy: [
-      {
-        context: ['/api'],
-        target: 'http://localhost:8080',
-      },
-    ],
-  },
+  // devServer: {
+  //   // static: {
+  //   //   directory: path.join(__dirname, '../dist'),
+  //   // },
+  //   compress: true,
+  //   port: 3000,
+  //   allowedHosts: 'all',
+  //   client: {
+  //     overlay: true,
+  //   },
+  //   proxy: [
+  //     {
+  //       context: ['/api'],
+  //       target: 'http://localhost:30500',
+  //     },
+  //   ],
+  // },
 
   plugins: [HTMLWebpackPluginConfig],
 

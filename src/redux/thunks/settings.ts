@@ -29,7 +29,7 @@ export const initialConfig = createAsyncThunk(
           initialConfig = {
             serverIp: hostname,
             baseUrl: isDevEnv
-              ? `${protocol}//${hostname}:8080/api/v1`
+              ? `${protocol}//${hostname}:30500/api/v1`
               : `${protocol}//${hostname}/api/v1`,
           };
         }

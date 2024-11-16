@@ -11,7 +11,7 @@
     "start:rc": "react-native start --reset-cache",
     "build": "cd android && gradlew build",
     "test": "jest",
-    "format": "prettier **/*.{js,ts,tsx} --check --write",
+    "format": "prettier **/*.{js,ts,tsx} --write",
     "format:check": "prettier **/*.{js,ts,tsx} --check",
     "typecheck": "tsc --noEmit",
     "clean": "cd android && gradlew clean",

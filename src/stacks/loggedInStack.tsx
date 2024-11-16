@@ -5,7 +5,7 @@ import {
 } from '@react-navigation/native-stack';
 import List from './list';
 import VideoPlayer from './video-player.android.tv';
-import { useLoginTimeout } from '../hooks/useLoginTimeout';
+import { LoginRefresh } from '../components/LoginRefresh';
 
 export type LoggedInStackParamList = {
   List: undefined;
@@ -16,11 +16,6 @@ export type LoggedInStackNavigationProp =
   NativeStackNavigationProp<LoggedInStackParamList>;
 
 const Stack = createNativeStackNavigator<LoggedInStackParamList>();
-
-const LoginRefresh = () => {
-  useLoginTimeout();
-  return <></>;
-};
 
 const LoggedInStack = () => {
   return (
