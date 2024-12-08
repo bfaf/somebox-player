@@ -20,9 +20,18 @@ export type MovieData = {
   name: string;
   releaseYear: string;
   filename: string;
-  startFrom: number;
+  moviesContinue?: MoviesContinue;
   published: number;
   createdAt: string;
   updatedAt: string;
   moviesMetadataEntity: MoviesMetadataEntity;
 };
+
+export type MoviesContinue = {
+  id: number;
+  movieId: number;
+  seriesId: number;
+  startFrom: number;
+  createdAt: string;
+  updatedAt: string;
+}

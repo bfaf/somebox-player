@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   SafeAreaView,
@@ -15,22 +15,35 @@ import { selectMovieById } from '../redux/slices/moviesSlice';
 import { useLoaderData } from 'react-router-dom';
 import ReactPlayer from 'react-player';
 import { useLoginTimeout } from '../hooks/useLoginTimeout';
+import { OnProgressProps } from 'react-player/base';
+import { updateMovieContinueTime } from '../redux/thunks/movies';
 
-export const videoLoader = ({ params }: { params: any }) => {
-  return params.videoId;
+type LoaderData = {
+  videoId: number;
+  continue: boolean;
+};
+
+export const videoLoader = ({ params }: { params: any }): LoaderData => {
+  return { videoId: params.videoId, continue: params.continue === 'true' };
 };
 
 const VideoPlayer = () => {
-  const videoId = useLoaderData();
+  const urlData = useLoaderData() as LoaderData;
+  console.log('data', urlData);
   const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
   const [videoError, setVideoError] = useState<any>(null);
   const [accessToken, setAccessToken] = useState<string>('');
   const [baseURL, setBaseURL] = useState<string>('');
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [hasSeeked, setHasSeeked] = useState<boolean>(false);
   const movieData = useSelector((state: RootState) =>
-    selectMovieById(state, Number.parseInt(`${videoId}`, 10)),
+    selectMovieById(state, Number.parseInt(`${urlData.videoId}`, 10)),
   );
+  let player = useRef<ReactPlayer>();
+  const ref = (plyr: ReactPlayer) => {
+    player.current = plyr;
+  };
+
 
   // TODO: Make this global for all components
   useLoginTimeout();
@@ -76,16 +89,34 @@ const VideoPlayer = () => {
     return <ActivityIndicator size="large" />;
   }
 
+  const onProgress = (state: OnProgressProps) => {
+    const startFrom = Math.ceil(state.playedSeconds * 100000);
+    dispatch(updateMovieContinueTime({ movieId: movieData?.movieId || 0, seriesId: 0, time: startFrom }));
+  };
+
+  const onReady = (playerInstance: ReactPlayer) => {
+    const startFrom = movieData?.moviesContinue?.startFrom || 0;
+    if (urlData.continue && !hasSeeked && startFrom > 0) {
+      const convertedToSeconds = startFrom / 100000;
+      playerInstance.seekTo(convertedToSeconds, 'seconds');
+      setHasSeeked(true);
+    }
+  };
+
   return (
     <SafeAreaView>
       <View style={styles.backgroundVideo}>
         <ReactPlayer
-          url={`${baseURL}/web/play/${videoId}?t=${accessToken}`}
+          url={`${baseURL}/web/play/${urlData.videoId}?t=${accessToken}`}
+          ref={ref}
           controls={true}
           width="100%"
           height="100%"
           onEnded={() => navigate('/list')}
           onError={onVideoError}
+          onProgress={onProgress}
+          onReady={onReady}
+          progressInterval={10 * 1000}
           playing={true}
           muted={false}
         />

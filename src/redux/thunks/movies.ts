@@ -12,3 +12,19 @@ export const fetchMovies = createAsyncThunk(
     }
   },
 );
+
+export const updateMovieContinueTime = createAsyncThunk(
+  'movies/updateMovieContinueTime',
+  async ({movieId, seriesId, time} : { movieId: number, seriesId: number, time: number }, { fulfillWithValue, rejectWithValue }) => {
+    try {
+      if (seriesId) {
+        await api.post(`/updateStartFrom/${movieId}?time=${time}&seriesId=${seriesId}`);
+      } else {
+        await api.post(`/updateStartFrom/${movieId}?time=${time}`);
+      }
+      return fulfillWithValue({movieId, seriesId, time});
+    } catch (err) {
+      return rejectWithValue(err);
+    }
+  },
+);

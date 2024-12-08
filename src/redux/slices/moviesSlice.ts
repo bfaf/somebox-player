@@ -1,8 +1,8 @@
-import { createSelector, createSlice } from '@reduxjs/toolkit';
+import { createSelector, createSlice, current } from '@reduxjs/toolkit';
 import { RootState } from '../store';
 import { AxiosError } from 'axios';
 import { MovieData } from '../../constants';
-import { fetchMovies } from '../thunks/movies';
+import { fetchMovies, updateMovieContinueTime } from '../thunks/movies';
 
 interface MoviesState {
   movies?: MovieData[];
@@ -55,6 +55,32 @@ export const moviesSlice = createSlice({
           isLoading: false,
           error: error.message,
         };
+      })
+      .addCase(updateMovieContinueTime.fulfilled, (state, action) => {
+        const {movieId, seriesId, time} = action.payload;
+        if (state.movies) {
+          const movies: MovieData[] = current(state.movies);
+          const movie = movies.find(m => m.movieId === movieId);
+          const idx = movies.findIndex(m => m.movieId === movieId);
+          const newMovie = {
+            ...movie,
+            moviesContinue: {
+              ...movie?.moviesContinue,
+              seriesId,
+              startFrom: time,
+            },
+          };
+          const newMovies: MovieData[] = (movies || []).filter(mov => mov.movieId !== movieId);
+          // @ts-ignore
+          newMovies.splice(idx, 0, newMovie);
+          return {
+            ...state,
+            movies: newMovies,
+            error: undefined,
+            isLoading: false,
+            isLoaded: true,
+          };
+        }
       });
   },
 });
