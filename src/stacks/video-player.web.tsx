@@ -29,7 +29,6 @@ export const videoLoader = ({ params }: { params: any }): LoaderData => {
 
 const VideoPlayer = () => {
   const urlData = useLoaderData() as LoaderData;
-  console.log('data', urlData);
   const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
   const [videoError, setVideoError] = useState<any>(null);

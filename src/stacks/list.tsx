@@ -207,10 +207,6 @@ const styles = StyleSheet.create({
   highlight: {
     fontWeight: '700',
   },
-  backgroundVideo: {
-    height: Dimensions.get('window').height,
-    width: Dimensions.get('window').width,
-  },
 });
 
 export default List;

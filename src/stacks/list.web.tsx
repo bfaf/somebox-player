@@ -82,7 +82,7 @@ function List(): JSX.Element {
               <View
                 key={r.filename}
                 style={{ display: 'flex', flexDirection: 'row' }}>
-                <Link key={r.filename} to={`/video/${r.movieId}/false`}>
+                <Link key={r.filename} to={`/details/${r.movieId}`}>
                   <Image
                     source={{
                       uri: `data:image/png;base64,${r.moviesMetadataEntity.poster}`,

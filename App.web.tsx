@@ -8,6 +8,7 @@ import ErrorPage from './src/components/errorPage.web';
 import Login from './src/stacks/login';
 import List from './src/stacks/list';
 import VideoPlayer, { videoLoader } from './src/stacks/video-player.web';
+import Details, { detailsLoader } from './src/stacks/details.web';
 
 createAxiosResponseInterceptor();
 
@@ -29,6 +30,11 @@ const router = createBrowserRouter([
     path: 'video/:videoId/:continue',
     element: <VideoPlayer />,
     loader: videoLoader,
+  },
+  {
+    path: 'details/:videoId',
+    element: <Details />,
+    loader: detailsLoader,
   },
 ]);
 
