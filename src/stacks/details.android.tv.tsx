@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
 import {
   SafeAreaView,
   StyleSheet,
@@ -7,36 +7,38 @@ import {
   ActivityIndicator,
   Text,
   Image,
-  Pressable
+  Pressable,
 } from 'react-native';
 import { useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
 import { selectMovieById } from '../redux/slices/moviesSlice';
-import { useLoaderData } from 'react-router-dom';
 import { useLoginTimeout } from '../hooks/useLoginTimeout';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { LoggedInStackParamList } from './loggedInStack';
 
-type LoaderData = {
-  videoId: number;
-};
+type DetailsProps = NativeStackScreenProps<
+  LoggedInStackParamList,
+  'Details'
+>;
 
-export const detailsLoader = ({ params }: { params: any }): LoaderData => {
-  return { videoId: params.videoId };
-};
-
-const Details = () => {
-  const urlData = useLoaderData() as LoaderData;
-  const navigate = useNavigate();
+const Details = ({ route }: DetailsProps) => {
+  const { videoId } = route?.params;
+  const navigation = useNavigation();
   const [isContinueHovered, setIsContinueHovered] = useState<boolean>(false);
   const [isRestartHovered, setIsRestartHovered] = useState<boolean>(false);
   const [isPlayHovered, setIsPlayHovered] = useState<boolean>(false);
   const movieData = useSelector((state: RootState) =>
-    selectMovieById(state, Number.parseInt(`${urlData.videoId}`, 10)),
+    selectMovieById(state, Number.parseInt(`${videoId}`, 10)),
   );
   const canContinue = movieData?.moviesContinue && movieData.moviesContinue.startFrom > 0;
   const metadata = movieData?.moviesMetadataEntity;
 
   // TODO: Make this global for all components
   useLoginTimeout();
+
+  useEffect(() => {
+    setIsContinueHovered(true);
+  }, []);
 
   if (!movieData) {
     return <ActivityIndicator size="large" />;
@@ -56,7 +58,7 @@ const Details = () => {
         </View>
         <View style={styles.content}>
           <Text style={styles.title}>{movieData.name}</Text>
-          <Text style={styles.plot} numberOfLines={5}>{metadata?.plot}</Text>
+          <Text style={styles.plot} numberOfLines={7}>{metadata?.plot}</Text>
           <View style={styles.detailsContainer}>
             <Text style={styles.detailsText}>Release year: {movieData?.releaseYear}</Text>
             <Text style={styles.detailsText}>Duration: {metadata?.duration}</Text>
@@ -66,22 +68,23 @@ const Details = () => {
           <View style={styles.buttonContainer}>
             {canContinue && (
               <>
-                <Pressable style={isContinueHovered ? styles.buttonHovered : styles.button} key="continue" onPress={() => navigate(`/video/${movieData.movieId}/true`)} onHoverIn={() => setIsContinueHovered(true)} onHoverOut={() => setIsContinueHovered(false)}>
-                  <Text style={isContinueHovered ? styles.buttonTextHovered : styles.buttonText}>Continue</Text>
+                <Pressable style={isContinueHovered ? styles.buttonHovered : styles.button} key="continue" onPress={() => navigation.navigate('Player', { videoId, continuePlaying: true })} onFocus={() => setIsContinueHovered(true)} onBlur={() => setIsContinueHovered(false)} hasTVPreferredFocus={true}>
+                  <Text style={isContinueHovered ? styles.buttonTextHovered : styles.buttonText}>Continue watching</Text>
                 </Pressable>
-                <Pressable style={isRestartHovered ? styles.buttonHovered : styles.button} key="restart" onPress={() => navigate(`/video/${movieData.movieId}/false`)} onHoverIn={() => setIsRestartHovered(true)} onHoverOut={() => setIsRestartHovered(false)}>
+                <Pressable style={isRestartHovered ? styles.buttonHovered : styles.button} key="restart" onPress={() => navigation.navigate('Player', { videoId, continuePlaying: false })} onFocus={() => setIsRestartHovered(true)} onBlur={() => setIsRestartHovered(false)}>
                   <Text style={isRestartHovered ? styles.buttonTextHovered : styles.buttonText}>Restart</Text>
                 </Pressable>
               </>
             )}
             {!canContinue && (
-              <Pressable style={isPlayHovered ? styles.buttonHovered : styles.button} key="play" onPress={() => navigate(`/video/${movieData.movieId}/false`)} onHoverIn={() => setIsPlayHovered(true)} onHoverOut={() => setIsPlayHovered(false)}>
+              <Pressable style={isPlayHovered ? styles.buttonHovered : styles.button} key="play" onPress={() => navigation.navigate('Player', { videoId: movieData.movieId, continuePlaying: false })} onFocus={() => setIsPlayHovered(true)} onBlur={() => setIsPlayHovered(false)} hasTVPreferredFocus={true}>
                 <Text style={isPlayHovered ? styles.buttonTextHovered : styles.buttonText}>Play</Text>
               </Pressable>
             )}
           </View>
         </View>
       </View>
+
     </SafeAreaView>
   );
 };

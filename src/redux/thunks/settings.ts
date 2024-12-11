@@ -65,9 +65,14 @@ export const updateIpAddress = createAsyncThunk(
   'settings/updateIpAddress',
   async (ipAddress: string, { fulfillWithValue, rejectWithValue }) => {
     try {
+      // ipAddress
+      let baseUrl = `http://${ipAddress}:8080/api/v1`;
+      if (ipAddress.indexOf(':') > 0) {
+        baseUrl = `http://${ipAddress}/api/v1`;
+      }
       const newConfig = {
         serverIp: ipAddress,
-        baseUrl: `http://${ipAddress}:8080/api/v1`,
+        baseUrl,
       };
       await AsyncStorage.setItem('SOMEBOX_SERVER_ADDRESS', newConfig.serverIp);
       await AsyncStorage.setItem('SOMEBOX_BASE_URL_ADDRESS', newConfig.baseUrl);

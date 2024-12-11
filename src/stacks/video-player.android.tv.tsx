@@ -18,6 +18,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { LoggedInStackParamList } from './loggedInStack';
 import { selectMovieById } from '../redux/slices/moviesSlice';
 import { OnProgressData, OnVideoErrorData } from 'react-native-video';
+import { updateMovieContinueTime } from '../redux/thunks/movies';
 
 type VideoPlayerProps = NativeStackScreenProps<
   LoggedInStackParamList,
@@ -25,7 +26,7 @@ type VideoPlayerProps = NativeStackScreenProps<
 >;
 
 const VideoPlayer = ({ route }: VideoPlayerProps) => {
-  const { videoId } = route?.params;
+  const { videoId, continuePlaying } = route?.params;
   const dispatch: AppDispatch = useDispatch();
   const navigation = useNavigation();
   const [isPaused, setIsPaused] = useState<boolean>(false);
@@ -33,6 +34,7 @@ const VideoPlayer = ({ route }: VideoPlayerProps) => {
   const [videoError, setVideoError] = useState<any>(null);
   const [accessToken, setAccessToken] = useState<string>('');
   const [baseURL, setBaseURL] = useState<string>('');
+  const [hasSeeked, setHasSeeked] = useState<boolean>(false);
   const movieData = useSelector((state: RootState) =>
     selectMovieById(state, videoId),
   );
@@ -60,7 +62,18 @@ const VideoPlayer = ({ route }: VideoPlayerProps) => {
   };
 
   const onProgress = (data: OnProgressData): void => {
-    setCurrentTimeInSeconds(data.currentTime);
+    const startFrom = Number(data.currentTime.toFixed(3)) * 1000;
+    dispatch(updateMovieContinueTime({ movieId: movieData?.movieId || 0, seriesId: 0, time: startFrom }));
+    setCurrentTimeInSeconds(data.currentTime); // this is in seconds
+  };
+
+  const onReady = (): void => {
+    const startFrom = movieData?.moviesContinue?.startFrom || 0;
+    if (continuePlaying && !hasSeeked && startFrom > 0) {
+      const convertedToSeconds = startFrom / 1000;
+      player.current.seek(convertedToSeconds);
+      setHasSeeked(true);
+    }
   };
 
   useEffect(() => {
@@ -106,6 +119,8 @@ const VideoPlayer = ({ route }: VideoPlayerProps) => {
           onError={onVideoError}
           videoRef={player}
           onProgress={onProgress}
+          progressUpdateInterval={5 * 1000}
+          onReadyForDisplay={onReady}
           repeat={false}
           onEnd={() => navigation.goBack()}
           style={styles.backgroundVideo}

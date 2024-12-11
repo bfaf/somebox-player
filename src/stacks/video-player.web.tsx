@@ -89,14 +89,14 @@ const VideoPlayer = () => {
   }
 
   const onProgress = (state: OnProgressProps) => {
-    const startFrom = Math.ceil(state.playedSeconds * 100000);
+    const startFrom = Number(state.playedSeconds.toFixed(3)) * 1000;
     dispatch(updateMovieContinueTime({ movieId: movieData?.movieId || 0, seriesId: 0, time: startFrom }));
   };
 
   const onReady = (playerInstance: ReactPlayer) => {
     const startFrom = movieData?.moviesContinue?.startFrom || 0;
     if (urlData.continue && !hasSeeked && startFrom > 0) {
-      const convertedToSeconds = startFrom / 100000;
+      const convertedToSeconds = startFrom / 1000;
       playerInstance.seekTo(convertedToSeconds, 'seconds');
       setHasSeeked(true);
     }

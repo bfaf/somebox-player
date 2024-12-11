@@ -6,10 +6,12 @@ import {
 import List from './list';
 import VideoPlayer from './video-player.android.tv';
 import { LoginRefresh } from '../components/LoginRefresh';
+import Details from './details.android.tv';
 
 export type LoggedInStackParamList = {
   List: undefined;
-  Player: { videoId: number };
+  Details: { videoId: number };
+  Player: { videoId: number, continuePlaying: boolean, };
 };
 
 export type LoggedInStackNavigationProp =
@@ -28,6 +30,7 @@ const LoggedInStack = () => {
         headerTitle: () => <LoginRefresh />,
       }}>
       <Stack.Screen name="List" component={List} />
+      <Stack.Screen name="Details" component={Details} />
       <Stack.Screen name="Player" component={VideoPlayer} />
     </Stack.Navigator>
   );

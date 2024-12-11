@@ -104,7 +104,7 @@ function List(): JSX.Element {
                     key={r.filename}
                     hasTVPreferredFocus={idx === 0 && innerIdx === 0}
                     onPress={() => {
-                      navigation.navigate('Player', { videoId: r.movieId });
+                      navigation.navigate('Details', { videoId: r.movieId });
                     }}>
                     <Image
                       source={{
