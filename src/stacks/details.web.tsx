@@ -7,13 +7,14 @@ import {
   ActivityIndicator,
   Text,
   Image,
-  Pressable
+  Pressable,
 } from 'react-native';
 import { useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
 import { selectMovieById } from '../redux/slices/moviesSlice';
 import { useLoaderData } from 'react-router-dom';
 import { useLoginTimeout } from '../hooks/useLoginTimeout';
+import Episodes from '../components/Episodes';
 
 type LoaderData = {
   videoId: number;
@@ -29,11 +30,16 @@ const Details = () => {
   const [isContinueHovered, setIsContinueHovered] = useState<boolean>(false);
   const [isRestartHovered, setIsRestartHovered] = useState<boolean>(false);
   const [isPlayHovered, setIsPlayHovered] = useState<boolean>(false);
+  const [isEpisodesHovered, setIsEpisodesHovered] = useState<boolean>(false);
+  const [showEpisodes, setShowEpisodes] = useState<boolean>(false);
+  const movieId = Number.parseInt(`${urlData.videoId}`, 10);
   const movieData = useSelector((state: RootState) =>
-    selectMovieById(state, Number.parseInt(`${urlData.videoId}`, 10)),
+    selectMovieById(state, movieId),
   );
   const canContinue = movieData?.moviesContinue && movieData.moviesContinue.startFrom > 0;
   const metadata = movieData?.moviesMetadataEntity;
+  const isTvSeries = movieData && (movieData.moviesSeries || []).length > 0;
+  const seriesId = movieData?.moviesContinue?.seriesId || 0;
 
   // TODO: Make this global for all components
   useLoginTimeout();
@@ -66,22 +72,28 @@ const Details = () => {
           <View style={styles.buttonContainer}>
             {canContinue && (
               <>
-                <Pressable style={isContinueHovered ? styles.buttonHovered : styles.button} key="continue" onPress={() => navigate(`/video/${movieData.movieId}/true`)} onHoverIn={() => setIsContinueHovered(true)} onHoverOut={() => setIsContinueHovered(false)}>
+                <Pressable style={isContinueHovered ? styles.buttonHovered : styles.button} key="continue" onPress={() => navigate(`/video/${movieData.movieId}/${seriesId}/true`)} onHoverIn={() => setIsContinueHovered(true)} onHoverOut={() => setIsContinueHovered(false)}>
                   <Text style={isContinueHovered ? styles.buttonTextHovered : styles.buttonText}>Continue</Text>
                 </Pressable>
-                <Pressable style={isRestartHovered ? styles.buttonHovered : styles.button} key="restart" onPress={() => navigate(`/video/${movieData.movieId}/false`)} onHoverIn={() => setIsRestartHovered(true)} onHoverOut={() => setIsRestartHovered(false)}>
+                <Pressable style={isRestartHovered ? styles.buttonHovered : styles.button} key="restart" onPress={() => navigate(`/video/${movieData.movieId}/${seriesId}/false`)} onHoverIn={() => setIsRestartHovered(true)} onHoverOut={() => setIsRestartHovered(false)}>
                   <Text style={isRestartHovered ? styles.buttonTextHovered : styles.buttonText}>Restart</Text>
                 </Pressable>
               </>
             )}
             {!canContinue && (
-              <Pressable style={isPlayHovered ? styles.buttonHovered : styles.button} key="play" onPress={() => navigate(`/video/${movieData.movieId}/false`)} onHoverIn={() => setIsPlayHovered(true)} onHoverOut={() => setIsPlayHovered(false)}>
+              <Pressable style={isPlayHovered ? styles.buttonHovered : styles.button} key="play" onPress={() => navigate(`/video/${movieData.movieId}/${seriesId}/false`)} onHoverIn={() => setIsPlayHovered(true)} onHoverOut={() => setIsPlayHovered(false)}>
                 <Text style={isPlayHovered ? styles.buttonTextHovered : styles.buttonText}>Play</Text>
+              </Pressable>
+            )}
+            {isTvSeries && (
+              <Pressable style={isEpisodesHovered ? styles.buttonHovered : styles.button} key="episodes" onPress={() => setShowEpisodes(true)} onHoverIn={() => setIsEpisodesHovered(true)} onHoverOut={() => setIsEpisodesHovered(false)}>
+                <Text style={isEpisodesHovered ? styles.buttonTextHovered : styles.buttonText}>Episodes</Text>
               </Pressable>
             )}
           </View>
         </View>
       </View>
+      {<Episodes show={showEpisodes} movieId={movieId} setShowModal={setShowEpisodes} />}
     </SafeAreaView>
   );
 };

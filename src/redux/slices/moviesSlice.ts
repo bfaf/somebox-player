@@ -92,9 +92,14 @@ export const selectIsLoadingMovies = (state: RootState) =>
 export const selectIsLoadedMovies = (state: RootState) => state.movies.isLoaded;
 export const selectErrorMovies = (state: RootState) => state.movies.error;
 const selectMovieId = (_state: RootState, movieId: number) => movieId;
+const selectSeriesId = (_state: RootState, seriesId: number) => seriesId;
 export const selectMovieById = createSelector(
   [selectMovies, selectMovieId],
   (movies, movieId) => (movies || []).find(movie => movie.movieId === movieId),
 );
+// export const selectSeriesById = createSelector(
+//   [selectMovies, selectMovieId, selectSeriesId],
+//   (movies, movieId, seriesId) => (movies || []).find(movie => movie.movieId === movieId)?.moviesSeries?.find(s => s.id === seriesId),
+// );
 
 export default moviesSlice.reducer;

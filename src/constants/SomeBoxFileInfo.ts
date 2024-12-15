@@ -21,6 +21,7 @@ export type MovieData = {
   releaseYear: string;
   filename: string;
   moviesContinue?: MoviesContinue;
+  moviesSeries?: MoviesSeries[];
   published: number;
   createdAt: string;
   updatedAt: string;
@@ -35,3 +36,15 @@ export type MoviesContinue = {
   createdAt: string;
   updatedAt: string;
 }
+
+export type MoviesSeries = {
+  id: number;
+  movieId: number;
+  filename: string;
+  creditsTime: number;
+  introTime: number;
+  skipIntroSeconds: number;
+  playCount: number;
+  createdAt: string;
+  updatedAt: string;
+};

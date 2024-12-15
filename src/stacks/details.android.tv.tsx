@@ -27,6 +27,7 @@ const Details = ({ route }: DetailsProps) => {
   const [isContinueHovered, setIsContinueHovered] = useState<boolean>(false);
   const [isRestartHovered, setIsRestartHovered] = useState<boolean>(false);
   const [isPlayHovered, setIsPlayHovered] = useState<boolean>(false);
+  // const [isEpisodesHovered, setIsEpisodesHovered] = useState<boolean>(false);
   const movieData = useSelector((state: RootState) =>
     selectMovieById(state, Number.parseInt(`${videoId}`, 10)),
   );
@@ -38,6 +39,12 @@ const Details = ({ route }: DetailsProps) => {
 
   useEffect(() => {
     setIsContinueHovered(true);
+
+    return () => {
+      setIsContinueHovered(false);
+      setIsRestartHovered(false);
+      setIsPlayHovered(false);
+    };
   }, []);
 
   if (!movieData) {
